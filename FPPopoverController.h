@@ -42,10 +42,28 @@
 /** @brief The tint of the popover. **/
 @property(nonatomic,assign) FPPopoverTint tint;
 
+/**
+ * @brief Whether to close the popover when a tap is detected that is outside the popover.
+ */
+ @property (nonatomic, assign) BOOL closesOnTapOff;
+
+/**
+ * @brief The color to set the area not covered by the popover.
+ */
+@property (nonatomic, retain) UIColor *backgroundDarkenerColor;
+
+/**
+ * @brief A view to keep in front of the background view but behind the popover
+ */
+@property (nonatomic, retain) UIView *inFrontView;
+
 /** @brief Initialize the popover with the content view controller
  **/
 -(id)initWithViewController:(UIViewController*)viewController;
 
+/**
+* Sets the popover style. This will change all aspects that a style object covers. Causes a redraw to occur.
+*/
 - (void)setStyle:(FPPopoverStyle*)style;
 
 /** @brief Presenting the popover from a specified view **/

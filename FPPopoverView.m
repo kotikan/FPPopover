@@ -19,7 +19,10 @@
 @end
 
 
-@implementation FPPopoverView
+@implementation FPPopoverView {
+    UIButton *leftButton;
+    UIButton *rightButton;
+}
 
 @synthesize title;
 @synthesize relativeOrigin;
@@ -130,6 +133,48 @@
         }
     }
     [self setupViews];
+}
+
+- (void)setLeftButton:(UIButton*)button {
+    if (leftButton) {
+        [leftButton removeFromSuperview];
+    }
+    [button retain];
+    [leftButton release];
+    leftButton = button;
+    [self addSubview:leftButton];
+    [self updateLeftButtonFrame];
+}
+
+- (void)setRightButton:(UIButton*)button {
+    if (rightButton) {
+        [rightButton removeFromSuperview];
+    }
+    [button retain];
+    [rightButton release];
+    rightButton = button;
+    [self addSubview:rightButton];
+    [self updateRightButtonFrame];
+}
+
+- (void)updateRightButtonFrame {
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGRect rightButtonFrame = CGRectMake(outerRect.origin.x + outerRect.size.width - (rightButton.frame.size.width + _style.borderWidth),
+                                         outerRect.origin.y + _style.borderWidth,
+                                         rightButton.frame.size.width,
+                                         rightButton.frame.size.height);
+    
+    rightButton.frame = rightButtonFrame;
+}
+
+- (void)updateLeftButtonFrame {
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGRect leftButtonFrame = CGRectMake(outerRect.origin.x + _style.borderWidth,
+                                        outerRect.origin.y + _style.borderWidth,
+                                        leftButton.frame.size.width,
+                                        leftButton.frame.size.height);
+    
+    leftButton.frame = leftButtonFrame;
 }
 
 #pragma mark drawing
@@ -476,6 +521,8 @@
     }
     _contentView.frame = contentRect;
     _titleLabel.text = self.title;
+    [self updateLeftButtonFrame];
+    [self updateRightButtonFrame];
 }
 
 -(void)layoutSubviews {

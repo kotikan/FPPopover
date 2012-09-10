@@ -56,5 +56,7 @@ typedef enum {
 -(FPPopoverArrowDirection)arrowDirection;
 
 -(void)addContentView:(UIView*)contentView;
+- (void)setLeftButton:(UIButton*)button;
+- (void)setRightButton:(UIButton*)button;
 
 @end

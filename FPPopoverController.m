@@ -27,12 +27,19 @@
 
 @end
 
-@implementation FPPopoverController
+@implementation FPPopoverController {
+    UIView *backgroundDarkener;
+    UIView *inFrontViewsParentView;
+    CGRect inFrontViewsFrame;
+}
+
 @synthesize delegate = _delegate;
 @synthesize contentSize = _contentSize;
 @synthesize origin = _origin;
 @synthesize arrowDirection = _arrowDirection;
 @synthesize tint = _tint;
+@synthesize backgroundDarkenerColor = _backgroundDarkenerColor;
+@synthesize inFrontView = _inFrontView;
 
 -(void)addObservers
 {
@@ -67,16 +74,18 @@
     [_contentView release];
     [_window release];
     [_parentView release];
+    [backgroundDarkener release];
     self.delegate = nil;
+    [inFrontViewsParentView release]; inFrontViewsParentView = nil;
+    self.inFrontView = nil;
     [super dealloc];
 }
 
 
--(id)initWithViewController:(UIViewController*)viewController
-{
+-(id)initWithViewController:(UIViewController*)viewController {
     self = [super init];
-    if(self)
-    {
+    if(self) {
+        _backgroundDarkenerColor = [UIColor clearColor];
         self.arrowDirection = FPPopoverArrowDirectionAny;
         self.view.userInteractionEnabled = YES;
         _touchView = [[FPTouchView alloc] initWithFrame:self.view.bounds];
@@ -84,12 +93,9 @@
         _touchView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _touchView.clipsToBounds = NO;
         [self.view addSubview:_touchView];
-        [_touchView setTouchedOutsideBlock:^{
-            [self dismissPopoverAnimated:YES]; 
-        }];
+        self.closesOnTapOff = YES;
         
-        
-        self.contentSize = CGSizeMake(200, 300); //default size
+        self.contentSize = viewController.contentSizeForViewInPopover;
 
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
                                               self.contentSize.width, self.contentSize.height)];
@@ -99,6 +105,12 @@
         [_touchView addSubview:_contentView];
         
         [_contentView addContentView:_viewController.view];
+        if ([_viewController.navigationItem.leftBarButtonItem.customView isKindOfClass:[UIButton class]]) {
+            [_contentView setLeftButton:(UIButton*)(_viewController.navigationItem.leftBarButtonItem.customView)];
+        }
+        if ([_viewController.navigationItem.rightBarButtonItem.customView isKindOfClass:[UIButton class]]) {
+            [_contentView setRightButton:(UIButton*)(_viewController.navigationItem.rightBarButtonItem.customView)];
+        }
         _viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.clipsToBounds = NO;
@@ -125,6 +137,16 @@
 - (void)setStyle:(FPPopoverStyle*)style {
     _contentView.style = style;
     [_contentView setNeedsDisplay];
+}
+
+- (void)setClosesOnTapOff:(BOOL)closesOnTapOff {
+    if (closesOnTapOff) {
+        [_touchView setTouchedOutsideBlock:^{
+            [self dismissPopoverAnimated:YES];
+        }];
+    } else {
+        [_touchView setTouchedOutsideBlock:nil];
+    }
 }
 
 -(FPPopoverTint)tint
@@ -188,32 +210,73 @@
     NSArray *windows = [UIApplication sharedApplication].windows;
     if(windows.count > 0)
     {
-        [_window release]; [_parentView release]; _parentView=nil;
+        [_window release];
+        [_parentView release];
+        _parentView = nil;
         _window = [[windows objectAtIndex:0] retain];
         //keep the first subview
-        if(_window.subviews.count > 0)
+        if (_window.subviews.count > 0)
         {
             [_parentView release]; 
             _parentView = [[_window.subviews objectAtIndex:0] retain];
+            [self setupBackgroundDarkener];
+            [self setupInFrontView];
             [_parentView addSubview:self.view];
         }
-        
-   }
-    else
-    {
+    } else {
         [self dismissPopoverAnimated:NO];
     }
     
-    
-    
+
     [self setupView];
     self.view.alpha = 0.0;
     [UIView animateWithDuration:0.2 animations:^{
-        
         self.view.alpha = 1.0;
     }];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FPNewPopoverPresented" object:self];
+}
+
+- (void)setupInFrontView {
+    if (backgroundDarkener && _inFrontView) {
+        inFrontViewsParentView = [_inFrontView.superview retain];
+        inFrontViewsFrame = _inFrontView.frame;
+        CGRect newRect = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
+        [_inFrontView removeFromSuperview];
+        _inFrontView.frame = newRect;
+        [_parentView addSubview:_inFrontView];
+    }
+}
+
+- (void)revertInFrontView {
+    if (_inFrontView && inFrontViewsParentView) {
+        [_inFrontView removeFromSuperview];
+        _inFrontView.frame = inFrontViewsFrame;
+        if (inFrontViewsParentView.superview) {
+            [inFrontViewsParentView addSubview:_inFrontView];
+        }
+    }
+}
+
+- (void)setupBackgroundDarkener {
+    if (_backgroundDarkenerColor.CGColor && _parentView) {
+        CGFloat alpha = CGColorGetAlpha(_backgroundDarkenerColor.CGColor);
+        if (alpha > 0.003f) {
+            if (backgroundDarkener) {
+                [backgroundDarkener removeFromSuperview];
+                [backgroundDarkener release];
+            }
+            CGRect darkenerFrame = _parentView.frame;
+            darkenerFrame.origin = CGPointZero;
+            backgroundDarkener = [[UIView alloc] initWithFrame:darkenerFrame];
+            backgroundDarkener.backgroundColor = _backgroundDarkenerColor;
+            backgroundDarkener.alpha = 0.0f;
+            [_parentView addSubview:backgroundDarkener];
+            [UIView animateWithDuration:0.2 animations:^{
+                backgroundDarkener.alpha = 1.0;
+            }];
+        }
+    }
 }
 
 -(CGPoint)originFromView:(UIView*)fromView
@@ -252,10 +315,15 @@
 -(void)dismissPopover
 {
     [self.view removeFromSuperview];
+    [backgroundDarkener removeFromSuperview];
+    [self revertInFrontView];
     if([self.delegate respondsToSelector:@selector(popoverControllerDidDismissPopover:)])
     {
         [self.delegate popoverControllerDidDismissPopover:self];
     }
+    self.inFrontView = nil;
+    [inFrontViewsParentView release]; inFrontViewsParentView = nil;
+    [backgroundDarkener release]; backgroundDarkener = nil;
     [_window release]; _window=nil;
     [_parentView release]; _parentView=nil;
 }
@@ -266,6 +334,7 @@
     {
         [UIView animateWithDuration:0.2 animations:^{
             self.view.alpha = 0.0;
+            backgroundDarkener.alpha = 0.0f;
         } completion:^(BOOL finished) {
             [self dismissPopover];
         }];
