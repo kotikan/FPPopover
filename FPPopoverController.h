@@ -46,6 +46,8 @@
  **/
 -(id)initWithViewController:(UIViewController*)viewController;
 
+- (void)setStyle:(FPPopoverStyle*)style;
+
 /** @brief Presenting the popover from a specified view **/
 -(void)presentPopoverFromView:(UIView*)fromView;
 

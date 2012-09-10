@@ -122,6 +122,11 @@
     [_contentView setNeedsDisplay];
 }
 
+- (void)setStyle:(FPPopoverStyle*)style {
+    _contentView.style = style;
+    [_contentView setNeedsDisplay];
+}
+
 -(FPPopoverTint)tint
 {
     return _contentView.tint;
