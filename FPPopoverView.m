@@ -118,7 +118,7 @@
     return _arrowDirection;
 }
 
--(void)addContentView:(UIView *)contentView {
+-(void)setContentView:(UIView *)contentView {
     if(_contentView != contentView) {
         [_contentView removeFromSuperview];
         [_contentView release];
@@ -369,12 +369,16 @@
     CGRect cvRect = _contentView.frame;
     // inner line
     UIColor *color = [_style innerContentFrameColor];
+    CGContextSetLineWidth(ctx, [_style innerContentFrameWidth]);
     CGContextSetStrokeColorWithColor(ctx, color.CGColor);
     CGContextStrokeRect(ctx, cvRect);
 
     // outer line
-    cvRect.origin.x -= 1; cvRect.origin.y -= 1; cvRect.size.height += 2; cvRect.size.width += 2;
+    CGFloat maxLineWidth = MAX([_style innerContentFrameWidth], [_style outerContentFrameWidth]);
+    cvRect.origin.x -= maxLineWidth; cvRect.origin.y -= maxLineWidth;
+    cvRect.size.height += 2.0f * maxLineWidth; cvRect.size.width += 2.0f * maxLineWidth;
     color = [_style innerContentFrameColor];
+    CGContextSetLineWidth(ctx, [_style outerContentFrameWidth]);
     CGContextSetStrokeColorWithColor(ctx, color.CGColor);
     CGContextStrokeRect(ctx, cvRect);
 }
@@ -413,10 +417,10 @@
     CGPoint start = CGPointMake(self.bounds.size.width/2.0, startY);
     CGPoint end = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height);
     CGGradientRef gradient;
-    if (_arrowDirection == FPPopoverArrowDirectionUp) {
-        gradient = [_style bottomBarGradientForTopArrow];
-    } else {
+    if (_arrowDirection == FPPopoverArrowDirectionDown) {
         gradient = [_style bottomBarGradientForBottomArrow];
+    } else {
+        gradient = [_style bottomBarGradientForNonBottomArrow];
     }
     CGContextDrawLinearGradient(ctx, gradient, start, end, 0);
 }
@@ -447,7 +451,7 @@
     if (_arrowDirection == FPPopoverArrowDirectionUp) {
         gradient = [_style topBarGradientForTopArrow];
     } else {
-        gradient = [_style topBarGradientForBottomArrow];
+        gradient = [_style topBarGradientForNonTopArrow];
     }
 
     if (_arrowDirection == FPPopoverArrowDirectionUp) {

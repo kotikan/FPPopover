@@ -12,6 +12,9 @@
 
 @class FPPopoverStyle;
 
+/**
+* Flags to indicate arrow direction and utility flag-groupings.
+*/
 typedef enum {
     FPPopoverArrowDirectionUp = 1UL << 0,
     FPPopoverArrowDirectionDown = 1UL << 1,
@@ -31,7 +34,10 @@ typedef enum {
 
 #define FPPopoverArrowDirectionIsHorizontal(direction)    ((direction) == FPPopoverArrowDirectionHorizontal || (direction) == FPPopoverArrowDirectionLeft || (direction) == FPPopoverArrowDirectionRight)
 
-
+/**
+* Simple styling enumeration that can be used to easily set one of the default styles. Should be deprecated in
+* favour of styles?
+*/
 typedef enum {
     FPPopoverBlackTint = 1UL << 0, // default
     FPPopoverLightGrayTint = 1UL << 1,
@@ -40,6 +46,9 @@ typedef enum {
     FPPopoverDefaultTint = FPPopoverBlackTint
 } FPPopoverTint;
 
+/**
+* The styled popover view that contains the content, handles rendering and arrows.
+*/
 @interface FPPopoverView : UIView
 {
     //default FPPopoverArrowDirectionUp
@@ -47,16 +56,56 @@ typedef enum {
     UIView *_contentView;
     UILabel *_titleLabel;
 }
+
+/**
+* The title that appears at the top of the popover. This is copied from the title of the view-controller that is passed
+* into FPPopoverViewController::initWithViewController. Set to nil for no title; in this case the top bar will be the
+* height of the style borderWidth.
+*/
 @property(nonatomic,retain) NSString *title;
+
+/**
+* The origin of this view relative to the content view.
+*/
 @property(nonatomic,assign) CGPoint relativeOrigin;
+
+/**
+* The color of the popover. Setting this will set the style to one of the default styles.
+*/
 @property(nonatomic,assign) FPPopoverTint tint;
+
+/**
+* The appearance of the popover.
+*/
 @property(nonatomic,retain) FPPopoverStyle *style;
 
--(void)setArrowDirection:(FPPopoverArrowDirection)arrowDirection;
--(FPPopoverArrowDirection)arrowDirection;
+/**
+* Sets the arrow to be protruding from a specific edge.
+*/
+- (void)setArrowDirection:(FPPopoverArrowDirection)arrowDirection;
 
--(void)addContentView:(UIView*)contentView;
+/**
+* The edge that the arrow is protruding from.
+*/
+- (FPPopoverArrowDirection)arrowDirection;
+
+/**
+* Sets the view to be drawn inside the popover.
+*/
+- (void)setContentView:(UIView*)contentView;
+
+/**
+* Sets a button on the left side of the popover alongside the title. Assumes the size of the button is appropriate
+* for the popover.
+* BUG: Assumes there is a title.
+*/
 - (void)setLeftButton:(UIButton*)button;
+
+/**
+* Sets a button on the right side of the popover alongside the title. Assumes the size of the button is appropriate
+* for the popover.
+* BUG: Assumes there is a title.
+*/
 - (void)setRightButton:(UIButton*)button;
 
 @end

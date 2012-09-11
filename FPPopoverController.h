@@ -13,14 +13,34 @@
 #import "FPTouchView.h"
 
 @class FPPopoverController;
+
+/**
+* The interface to receive events about popovers being shown and dismissed.
+*/
 @protocol FPPopoverControllerDelegate <NSObject>
 
 @optional
+
+/**
+* Called when a popover finishes closing.
+*
+* @param popoverController The popover that has closed.
+*/
 - (void)popoverControllerDidDismissPopover:(FPPopoverController *)popoverController;
+
+/**
+* Called by existing popovers when a new popover is shown.
+*
+* @param newPopoverController The new popover being shown.
+* @param visiblePopoverController A popover that is already visible.
+*/
 - (void)presentedNewPopoverController:(FPPopoverController *)newPopoverController 
           shouldDismissVisiblePopover:(FPPopoverController*)visiblePopoverController;
 @end
 
+/**
+* A view-controller that mimics the behaviour of UIPopoverController but with more flexible styling options.
+*/
 @interface FPPopoverController : UIViewController
 {
     FPTouchView *_touchView;
@@ -31,12 +51,24 @@
     UIView *_fromView;
     UIDeviceOrientation _deviceOrientation;
 }
+
+/**
+* A delegate that will be informed of popovers being shown and dismissed.
+*/
 @property(nonatomic,assign) id<FPPopoverControllerDelegate> delegate;
+
 /** @brief FPPopoverArrowDirectionAny, FPPopoverArrowDirectionVertical or FPPopoverArrowDirectionHorizontal for automatic arrow direction.
  **/
 @property(nonatomic,assign) FPPopoverArrowDirection arrowDirection;
 
+/**
+* The size of the content displayed inside the popover
+*/
 @property(nonatomic,assign) CGSize contentSize;
+
+/**
+* The point that the popover is pointing to.
+*/
 @property(nonatomic,assign) CGPoint origin;
 
 /** @brief The tint of the popover. **/
@@ -72,12 +104,7 @@
 /** @brief Presenting the popover from a specified point **/
 -(void)presentPopoverFromPoint:(CGPoint)fromPoint;
 
-
 /** @brief Dismiss the popover **/
 -(void)dismissPopoverAnimated:(BOOL)animated;
-
-
-
-
 
 @end

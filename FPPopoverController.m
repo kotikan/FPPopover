@@ -103,8 +103,8 @@
         _viewController = [viewController retain];
         
         [_touchView addSubview:_contentView];
-        
-        [_contentView addContentView:_viewController.view];
+
+        [_contentView setContentView:_viewController.view];
         if ([_viewController.navigationItem.leftBarButtonItem.customView isKindOfClass:[UIButton class]]) {
             [_contentView setLeftButton:(UIButton*)(_viewController.navigationItem.leftBarButtonItem.customView)];
         }
@@ -174,7 +174,7 @@
     
     //initialize and load the content view
     [_contentView setArrowDirection:FPPopoverArrowDirectionUp];
-    [_contentView addContentView:_viewController.view];
+    [_contentView setContentView:_viewController.view];
 
     [self setupView];
     [self addObservers];

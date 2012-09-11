@@ -64,11 +64,11 @@
     return nil;
 }
 
-- (CGGradientRef)topBarGradientForBottomArrow {
+- (CGGradientRef)topBarGradientForNonTopArrow {
     return nil;
 }
 
-- (CGGradientRef)bottomBarGradientForTopArrow {
+- (CGGradientRef)bottomBarGradientForNonBottomArrow {
     return nil;
 }
 

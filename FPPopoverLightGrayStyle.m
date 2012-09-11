@@ -36,7 +36,7 @@
     return topBarGradientForTopArrow;
 }
 
-- (CGGradientRef)topBarGradientForBottomArrow {
+- (CGGradientRef)topBarGradientForNonTopArrow {
     return topBarGradientForBottomArrow;
 }
 
