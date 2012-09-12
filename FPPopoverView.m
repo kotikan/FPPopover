@@ -66,17 +66,17 @@
 - (void)setTint:(FPPopoverTint)tint {
     switch (tint) {
         case FPPopoverLightGrayTint:
-            self.style = [[FPPopoverLightGrayStyle alloc] init];
+            self.style = [[[FPPopoverLightGrayStyle alloc] init] autorelease];
             break;
         case FPPopoverGreenTint:
-            self.style = [[FPPopoverGreenStyle alloc] init];
+            self.style = [[[FPPopoverGreenStyle alloc] init] autorelease];
             break;
         case FPPopoverRedTint:
-            self.style = [[FPPopoverRedStyle alloc] init];
+            self.style = [[[FPPopoverRedStyle alloc] init] autorelease];
             break;
         case FPPopoverBlackTint:
         default:
-            self.style = [[FPPopoverBlackStyle alloc] init];
+            self.style = [[[FPPopoverBlackStyle alloc] init] autorelease];
             break;
     }
 }
@@ -223,13 +223,6 @@
         ax = aw + b;
     } else if (ax +2*aw + 2*b> self.bounds.size.width) {
         ax = self.bounds.size.width - 2*aw - 2*b;
-    }
-
-    CGFloat ay = self.relativeOrigin.y - aw; //the start of the arrow when RIGHT or LEFT
-    if (ay < aw + b) {
-        ay = aw + b;
-    } else if (ay +2*aw + 2*b > self.bounds.size.height) {
-        ay = self.bounds.size.height - 2*aw - 2*b;
     }
 
     //ROUNDED RECT
