@@ -88,6 +88,9 @@
     [style retain];
     [_style release];
     _style = style;
+    if (!_style) {
+        return;
+    }
 
     _titleLabel.textColor = _style.titleColor;
     _titleLabel.shadowColor = _style.titleShadowColor;
