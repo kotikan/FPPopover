@@ -8,6 +8,7 @@
 
 
 #import "FPPopoverController.h"
+#import "FPPopoverAccessoriesProtocol.h"
 
 @interface FPPopoverController(Private)
 -(CGPoint)originFromView:(UIView*)fromView;
@@ -105,11 +106,18 @@
         [_touchView addSubview:_contentView];
 
         [_contentView setContentView:_viewController.view];
-        if ([_viewController.navigationItem.leftBarButtonItem.customView isKindOfClass:[UIButton class]]) {
-            [_contentView setLeftButton:(UIButton*)(_viewController.navigationItem.leftBarButtonItem.customView)];
-        }
-        if ([_viewController.navigationItem.rightBarButtonItem.customView isKindOfClass:[UIButton class]]) {
-            [_contentView setRightButton:(UIButton*)(_viewController.navigationItem.rightBarButtonItem.customView)];
+        if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
+            UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
+
+            if ([accessoriesViewController respondsToSelector:@selector(leftTopBarButton)]) {
+                [_contentView setLeftButton:[accessoriesViewController leftTopBarButton]];
+            }
+            if ([accessoriesViewController respondsToSelector:@selector(rightTopBarButton)]) {
+                [_contentView setRightButton:[accessoriesViewController rightTopBarButton]];
+            }
+            if ([accessoriesViewController respondsToSelector:@selector(bottomBarButtons)]) {
+                [_contentView setBottomBarButtons:[accessoriesViewController bottomBarButtons]];
+            }
         }
         _viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -180,6 +188,25 @@
     [self addObservers];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [_viewController viewWillAppear:animated];
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [_viewController viewDidAppear:animated];
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [_viewController viewWillDisappear:animated];
+    [super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [_viewController viewDidDisappear:animated];
+    [super viewDidDisappear:animated];
+}
 #pragma mark Orientation
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -227,7 +254,7 @@
         [self dismissPopoverAnimated:NO];
     }
     
-
+    [self viewWillAppear:NO];
     [self setupView];
     self.view.alpha = 0.0;
     [UIView animateWithDuration:0.2 animations:^{
@@ -235,6 +262,7 @@
     }];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FPNewPopoverPresented" object:self];
+    [self viewDidAppear:NO];
 }
 
 - (void)setupInFrontView {
@@ -314,6 +342,7 @@
 
 -(void)dismissPopover
 {
+    [self viewWillDisappear:NO];
     [self.view removeFromSuperview];
     [backgroundDarkener removeFromSuperview];
     [self revertInFrontView];
@@ -326,6 +355,7 @@
     [backgroundDarkener release]; backgroundDarkener = nil;
     [_window release]; _window=nil;
     [_parentView release]; _parentView=nil;
+    [self viewDidDisappear:NO];
 }
 
 -(void)dismissPopoverAnimated:(BOOL)animated

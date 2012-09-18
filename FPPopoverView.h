@@ -108,4 +108,12 @@ typedef enum {
 */
 - (void)setRightButton:(UIButton*)button;
 
+/**
+* Arranges an array of buttons in a single line along the bottom of the popover. Assumes the sizes of the buttons are
+* appropriate for the size of the popover and the height of the bottom bar.
+*
+* @param buttons An array of UIButton buttons.
+*/
+- (void)setBottomBarButtons:(NSArray *)buttons;
+
 @end

@@ -22,6 +22,7 @@
 @implementation FPPopoverView {
     UIButton *leftButton;
     UIButton *rightButton;
+    NSArray *bottomBarButtons;
 }
 
 @synthesize title;
@@ -160,7 +161,64 @@
     [self updateRightButtonFrame];
 }
 
+
+- (void)setBottomBarButtons:(NSArray *)buttons {
+    if (bottomBarButtons) {
+        for (UIButton *button in bottomBarButtons) {
+            [button removeFromSuperview];
+        }
+    }
+    [buttons retain];
+    [bottomBarButtons release];
+    bottomBarButtons = buttons;
+    for (UIButton *button in bottomBarButtons) {
+        [self addSubview:button];
+    }
+    [self updateBottomBarButtonFrames];
+}
+
+- (void)updateBottomBarButtonFrames {
+    if (!bottomBarButtons) {
+        return;
+    }
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGFloat widthForButtons = outerRect.size.width - (_style.borderWidth * 2.0f);
+    CGFloat buttonWidths = [self bottomBarButtonsWidth];
+    NSUInteger gaps = bottomBarButtons.count - 1;
+    UIButton *firstButton = [bottomBarButtons objectAtIndex:0];
+    CGRect firstButtonFrame = firstButton.frame;
+    CGFloat y = (outerRect.origin.y + outerRect.size.height) - (_style.borderWidth + firstButtonFrame.size.height);
+    if (gaps <= 0) {
+        firstButtonFrame.origin.x = _style.borderWidth + (widthForButtons - buttonWidths) * 0.5f;
+        firstButtonFrame.origin.y = y;
+        firstButton.frame = firstButtonFrame;
+    } else {
+        CGFloat gapWidth = (widthForButtons - buttonWidths) / (CGFloat)gaps;
+        CGFloat x = _style.borderWidth + outerRect.origin.x;
+
+        for (UIButton *button in bottomBarButtons) {
+            CGRect buttonFrame = button.frame;
+            buttonFrame.origin.x = x;
+            buttonFrame.origin.y = y;
+            button.frame = buttonFrame;
+
+            x += buttonFrame.size.width + gapWidth;
+        }
+    }
+}
+
+- (CGFloat)bottomBarButtonsWidth {
+    CGFloat width = 0.0f;
+    for (UIButton *button in bottomBarButtons) {
+        width += button.frame.size.width;
+    }
+    return width;
+}
+
 - (void)updateRightButtonFrame {
+    if (!rightButton) {
+        return;
+    }
     CGRect outerRect = [self outerRectForBorderWidth:1.0f];
     CGRect rightButtonFrame = CGRectMake(outerRect.origin.x + outerRect.size.width - (rightButton.frame.size.width + _style.borderWidth),
                                          outerRect.origin.y + _style.borderWidth,
@@ -171,6 +229,9 @@
 }
 
 - (void)updateLeftButtonFrame {
+    if (!leftButton) {
+        return;
+    }
     CGRect outerRect = [self outerRectForBorderWidth:1.0f];
     CGRect leftButtonFrame = CGRectMake(outerRect.origin.x + _style.borderWidth,
                                         outerRect.origin.y + _style.borderWidth,
@@ -523,6 +584,7 @@
     _titleLabel.text = self.title;
     [self updateLeftButtonFrame];
     [self updateRightButtonFrame];
+    [self updateBottomBarButtonFrames];
 }
 
 -(void)layoutSubviews {
