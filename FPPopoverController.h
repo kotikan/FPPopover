@@ -89,6 +89,13 @@
  */
 @property (nonatomic, retain) UIView *inFrontView;
 
+@property (nonatomic, readonly) BOOL popoverVisible;
+
+/**
+ * @brief Sets the size of the popover including the borders and arrow.
+ */
+@property (nonatomic, assign) CGSize popoverContentSize;
+
 /** @brief Initialize the popover with the content view controller
  **/
 -(id)initWithViewController:(UIViewController*)viewController;
@@ -106,5 +113,10 @@
 
 /** @brief Dismiss the popover **/
 -(void)dismissPopoverAnimated:(BOOL)animated;
+
+/**
+ * The view-controller that this popover controller was created with.
+ */
+- (UIViewController *)contentViewController;
 
 @end

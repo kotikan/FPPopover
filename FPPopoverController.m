@@ -26,6 +26,8 @@
 
 -(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v;
 
+@property (nonatomic, readwrite) BOOL popoverVisible;
+
 @end
 
 @implementation FPPopoverController {
@@ -41,6 +43,7 @@
 @synthesize tint = _tint;
 @synthesize backgroundDarkenerColor = _backgroundDarkenerColor;
 @synthesize inFrontView = _inFrontView;
+@synthesize popoverVisible = _popoverVisible;
 
 -(void)addObservers
 {
@@ -86,7 +89,7 @@
 -(id)initWithViewController:(UIViewController*)viewController {
     self = [super init];
     if(self) {
-        _backgroundDarkenerColor = [UIColor clearColor];
+        _backgroundDarkenerColor = nil;
         self.arrowDirection = FPPopoverArrowDirectionAny;
         self.view.userInteractionEnabled = YES;
         _touchView = [[FPTouchView alloc] initWithFrame:self.view.bounds];
@@ -162,6 +165,15 @@
     return _contentView.tint;
 }
 
+- (void)setPopoverContentSize:(CGSize)popoverContentSize {
+    self.contentSize = popoverContentSize;
+    _contentView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+}
+
+- (UIViewController *)contentViewController {
+    return _viewController;
+}
+
 #pragma mark - View lifecycle
 
 -(void)setupView
@@ -194,6 +206,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    _popoverVisible = YES;
     [_viewController viewDidAppear:animated];
     [super viewDidAppear:animated];
 }
@@ -204,6 +217,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    _popoverVisible = NO;
     [_viewController viewDidDisappear:animated];
     [super viewDidDisappear:animated];
 }
@@ -228,6 +242,15 @@
     return UIDeviceOrientationIsPortrait(_deviceOrientation) ? _parentView.frame.size.height : _parentView.frame.size.width;
 }
 
+- (UIView*)containerViewFromWindow:(UIWindow *)window {
+    for (UIView *view in window.subviews) {
+        if ([view isKindOfClass:NSClassFromString(@"UILayoutContainerView")]) {
+            return view;
+        }
+    }
+    return nil;
+}
+
 -(void)presentPopoverFromPoint:(CGPoint)fromPoint
 {
     self.origin = fromPoint;
@@ -245,7 +268,7 @@
         if (_window.subviews.count > 0)
         {
             [_parentView release]; 
-            _parentView = [[_window.subviews objectAtIndex:0] retain];
+            _parentView = [[self containerViewFromWindow:_window] retain];
             [self setupBackgroundDarkener];
             [self setupInFrontView];
             [_parentView addSubview:self.view];
@@ -287,7 +310,7 @@
 }
 
 - (void)setupBackgroundDarkener {
-    if (_backgroundDarkenerColor.CGColor && _parentView) {
+    if (_backgroundDarkenerColor && _backgroundDarkenerColor.CGColor && _parentView) {
         CGFloat alpha = CGColorGetAlpha(_backgroundDarkenerColor.CGColor);
         if (alpha > 0.003f) {
             if (backgroundDarkener) {
@@ -295,6 +318,10 @@
                 [backgroundDarkener release];
             }
             CGRect darkenerFrame = _parentView.frame;
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            if (UIInterfaceOrientationIsLandscape(orientation)) {
+                darkenerFrame.size = CGSizeMake(darkenerFrame.size.height, darkenerFrame.size.width);
+            }
             darkenerFrame.origin = CGPointZero;
             backgroundDarkener = [[UIView alloc] initWithFrame:darkenerFrame];
             backgroundDarkener.backgroundColor = _backgroundDarkenerColor;
@@ -560,7 +587,7 @@
     else 
     {
         //ok, will be horizontal 
-        if(wl == best_w || self.arrowDirection == FPPopoverArrowDirectionRight)
+        if(wl == best_w && self.arrowDirection != FPPopoverArrowDirectionLeft)
         {
             //on the left and arrow right
             bestDirection = FPPopoverArrowDirectionRight;
