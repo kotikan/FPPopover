@@ -5,6 +5,9 @@
 //  Copyright (c) 2012 Fifty Pixels Ltd. All rights reserved.
 //
 //  https://github.com/50pixels/FPPopover
+//
+// Updated by Jock Findlay
+// https://github.com/kotikan/FPPopover
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
@@ -118,5 +121,11 @@
  * The view-controller that this popover controller was created with.
  */
 - (UIViewController *)contentViewController;
+
+/**
+ * If the content view controller implements the FPPopoverAccessoriesProtocol, the accessories on the popovers bars
+ * will be updated.
+ */
+- (void)updateAccessories;
 
 @end

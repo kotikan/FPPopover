@@ -5,7 +5,9 @@
 //  Copyright (c) 2012 Fifty Pixels Ltd. All rights reserved.
 //
 //  https://github.com/50pixels/FPPopover
-
+//
+// Updated by Jock Findlay
+// https://github.com/kotikan/FPPopover
 
 #import "FPPopoverView.h"
 #import "FPPopoverStyle.h"
@@ -23,6 +25,7 @@
     UIButton *leftButton;
     UIButton *rightButton;
     NSArray *bottomBarButtons;
+    UIView *topCentreView;
 }
 
 @synthesize title;
@@ -146,6 +149,9 @@
     [button retain];
     [leftButton release];
     leftButton = button;
+    if (!button) {
+        return;
+    }
     [self addSubview:leftButton];
     [self updateLeftButtonFrame];
 }
@@ -157,10 +163,26 @@
     [button retain];
     [rightButton release];
     rightButton = button;
+    if (!button) {
+        return;
+    }
     [self addSubview:rightButton];
     [self updateRightButtonFrame];
 }
 
+- (void)setTopCentreView:(UIView*)view {
+    if (topCentreView) {
+        [topCentreView removeFromSuperview];
+    }
+    [view retain];
+    [topCentreView release];
+    topCentreView = view;
+    if (!topCentreView) {
+        return;
+    }
+    [self addSubview:topCentreView];
+    [self updateTopCentreViewFrame];
+}
 
 - (void)setBottomBarButtons:(NSArray *)buttons {
     if (bottomBarButtons) {
@@ -171,6 +193,9 @@
     [buttons retain];
     [bottomBarButtons release];
     bottomBarButtons = buttons;
+    if (!buttons) {
+        return;
+    }
     for (UIButton *button in bottomBarButtons) {
         [self addSubview:button];
     }
@@ -191,7 +216,7 @@
     if (gaps <= 0) {
         firstButtonFrame.origin.x = _style.borderWidth + (widthForButtons - buttonWidths) * 0.5f;
         firstButtonFrame.origin.y = y;
-        firstButton.frame = firstButtonFrame;
+        firstButton.frame = CGRectIntegral(firstButtonFrame);
     } else {
         CGFloat gapWidth = (widthForButtons - buttonWidths) / (CGFloat)gaps;
         CGFloat x = _style.borderWidth + outerRect.origin.x;
@@ -200,7 +225,7 @@
             CGRect buttonFrame = button.frame;
             buttonFrame.origin.x = x;
             buttonFrame.origin.y = y;
-            button.frame = buttonFrame;
+            button.frame = CGRectIntegral(buttonFrame);
 
             x += buttonFrame.size.width + gapWidth;
         }
@@ -225,7 +250,20 @@
                                          rightButton.frame.size.width,
                                          rightButton.frame.size.height);
     
-    rightButton.frame = rightButtonFrame;
+    rightButton.frame = CGRectIntegral(rightButtonFrame);
+}
+
+- (void)updateTopCentreViewFrame {
+    if (!topCentreView) {
+        return;
+    }
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGRect topCentreFrame = CGRectMake(outerRect.origin.x + outerRect.size.width * 0.5f - topCentreView.frame.size.width * 0.5f,
+                                         outerRect.origin.y + _style.borderWidth,
+                                         topCentreView.frame.size.width,
+                                         topCentreView.frame.size.height);
+    
+    topCentreView.frame = CGRectIntegral(topCentreFrame);
 }
 
 - (void)updateLeftButtonFrame {
@@ -238,7 +276,7 @@
                                         leftButton.frame.size.width,
                                         leftButton.frame.size.height);
     
-    leftButton.frame = leftButtonFrame;
+    leftButton.frame = CGRectIntegral(leftButtonFrame);
 }
 
 #pragma mark drawing
@@ -400,7 +438,7 @@
     CGContextAddPath(ctx, contentPath);
     CGContextClip(ctx);
     [self drawHeaderGradient:ctx];
-    [self drawMainFill:ctx];
+    [self drawMain:ctx];
     if ([_style bottomBarGradientHeight] > 0.0f) {
         [self drawBottomBarGradient:ctx];
     }
@@ -467,7 +505,7 @@
 }
 
 - (void)drawBottomBarGradient:(CGContextRef)ctx {
-    CGFloat startY = self.bounds.size.height - [_style bottomBarHeight];
+    CGFloat startY = self.bounds.size.height - [_style bottomBarGradientHeight];
     if (_arrowDirection == FPPopoverArrowDirectionDown) {
         startY -= [_style arrowHeight];
     }
@@ -482,6 +520,14 @@
     CGContextDrawLinearGradient(ctx, gradient, start, end, 0);
 }
 
+- (void)drawMain:(CGContextRef)ctx {
+    if ([_style borderGradient] == nil) {
+        [self drawMainFill:ctx];
+    } else {
+        [self drawMainGradient:ctx];
+    }
+}
+
 - (void)drawMainFill:(CGContextRef)ctx {
     UIColor *fillColor = [_style borderColor];
     CGFloat startY = [_style topBarGradientHeight];
@@ -492,12 +538,33 @@
 
     CGContextSetFillColorWithColor(ctx, fillColor.CGColor);
     if ([_style bottomBarGradientHeight] > 0.0f) {
-        height -= [_style bottomBarHeight];
+        height -= [_style bottomBarGradientHeight];
         if (_arrowDirection == FPPopoverArrowDirectionDown) {
             height -= [_style arrowHeight];
         }
     }
     CGContextFillRect(ctx, CGRectMake(0, startY, self.bounds.size.width, height));
+}
+
+- (void)drawMainGradient:(CGContextRef)ctx {
+    CGPoint start;
+    
+    if (_arrowDirection == FPPopoverArrowDirectionUp) {
+        start = CGPointMake(self.bounds.size.width/2.0, [_style arrowHeight] + [_style topBarGradientHeight]);
+    } else {
+        start = CGPointMake(self.bounds.size.width/2.0, [_style topBarGradientHeight]);
+    }
+
+    CGPoint end;
+    
+    if (_arrowDirection == FPPopoverArrowDirectionDown) {
+        end = CGPointMake(self.bounds.size.width/2.0,
+                          self.bounds.size.height - ([_style bottomBarGradientHeight] + [_style arrowHeight]));
+    } else {
+        end = CGPointMake(self.bounds.size.width/2.0,
+                          self.bounds.size.height - [_style bottomBarGradientHeight]);
+    }
+    CGContextDrawLinearGradient(ctx, [_style borderGradient], start, end, 0);
 }
 
 - (void)drawHeaderGradient:(CGContextRef)ctx {
@@ -531,7 +598,7 @@
                 self.bounds.size.height - (_style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight));
         _titleLabel.frame = CGRectMake(_style.borderWidth, _style.arrowHeight + _style.borderWidth,
                 self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
-		if (self.title == nil || self.title.length == 0) {
+		if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth, _style.arrowHeight + _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
                     self.bounds.size.height - (_style.arrowHeight + 2.0f * _style.borderWidth));
@@ -542,7 +609,7 @@
                 self.bounds.size.height-(_style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight));
         _titleLabel.frame = CGRectMake(_style.borderWidth, _style.borderWidth,
                 self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
-        if (self.title == nil || self.title.length == 0) {
+        if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth, _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
                     self.bounds.size.height - (_style.arrowHeight + 2.0f * _style.borderWidth));
@@ -554,7 +621,7 @@
         _titleLabel.frame = CGRectMake(_style.borderWidth, _style.borderWidth,
                 self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                 _style.topBarHeight - 2.0f * _style.borderWidth);
-        if (self.title == nil || self.title.length == 0) {
+        if (self.title == nil) {
             contentRect.origin = CGPointMake(_style.borderWidth, _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                     self.bounds.size.height - 2.0f * _style.borderWidth);
@@ -566,7 +633,7 @@
         _titleLabel.frame = CGRectMake(_style.borderWidth + _style.arrowHeight, _style.borderWidth,
                 self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                 _style.topBarHeight - 2.0f * _style.borderWidth);
-        if (self.title == nil || self.title.length == 0) {
+        if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth + _style.arrowHeight, _style.borderWidth);
             contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                     self.bounds.size.height - 2.0f * _style.borderWidth);
@@ -584,6 +651,7 @@
     _titleLabel.text = self.title;
     [self updateLeftButtonFrame];
     [self updateRightButtonFrame];
+    [self updateTopCentreViewFrame];
     [self updateBottomBarButtonFrames];
 }
 

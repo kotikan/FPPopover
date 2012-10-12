@@ -4,7 +4,7 @@
 //
 //  Created by Jock Findlay on 09/09/2012.
 //
-//
+// https://github.com/kotikan/FPPopover
 
 #import "FPPopoverRedStyle.h"
 

@@ -4,6 +4,7 @@
 //
 // Created by jock on 09/09/2012.
 //
+// https://github.com/kotikan/FPPopover
 
 #import <Foundation/Foundation.h>
 
@@ -55,6 +56,11 @@
 * color.
 */
 - (UIColor*)borderColor;
+
+/**
+ * A gradient for the border as an alternative to solid color.
+ */
+- (CGGradientRef)borderGradient;
 
 /**
 * The width of the border around the popover. Also the gap between the top of the popover and the title (if any) and

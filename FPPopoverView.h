@@ -5,7 +5,9 @@
 //  Copyright (c) 2012 Fifty Pixels Ltd. All rights reserved.
 //
 //  https://github.com/50pixels/FPPopover
-
+//
+// Updated by Jock Findlay
+// https://github.com/kotikan/FPPopover
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
@@ -107,6 +109,12 @@ typedef enum {
 * BUG: Assumes there is a title.
 */
 - (void)setRightButton:(UIButton*)button;
+
+/**
+ * Sets a view in the centre of the popover where the title would be. Assumes the size of the view is appropriate
+ * for the popover. Will cover the title.
+ */
+- (void)setTopCentreView:(UIView*)view;
 
 /**
 * Arranges an array of buttons in a single line along the bottom of the popover. Assumes the sizes of the buttons are

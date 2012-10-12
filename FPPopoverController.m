@@ -5,7 +5,9 @@
 //  Copyright (c) 2012 Fifty Pixels Ltd. All rights reserved.
 //
 //  https://github.com/50pixels/FPPopover
-
+//
+// Updated by Jock Findlay
+// https://github.com/kotikan/FPPopover
 
 #import "FPPopoverController.h"
 #import "FPPopoverAccessoriesProtocol.h"
@@ -99,6 +101,10 @@
         [self.view addSubview:_touchView];
         self.closesOnTapOff = YES;
         
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
+            viewController = ((UINavigationController*)viewController).topViewController;
+        }
+        
         self.contentSize = viewController.contentSizeForViewInPopover;
 
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
@@ -109,19 +115,7 @@
         [_touchView addSubview:_contentView];
 
         [_contentView setContentView:_viewController.view];
-        if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
-            UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
-
-            if ([accessoriesViewController respondsToSelector:@selector(leftTopBarButton)]) {
-                [_contentView setLeftButton:[accessoriesViewController leftTopBarButton]];
-            }
-            if ([accessoriesViewController respondsToSelector:@selector(rightTopBarButton)]) {
-                [_contentView setRightButton:[accessoriesViewController rightTopBarButton]];
-            }
-            if ([accessoriesViewController respondsToSelector:@selector(bottomBarButtons)]) {
-                [_contentView setBottomBarButtons:[accessoriesViewController bottomBarButtons]];
-            }
-        }
+        [self updateAccessories];
         _viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.clipsToBounds = NO;
@@ -138,6 +132,24 @@
     return self;
 }
 
+- (void)updateAccessories {
+    if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
+        UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
+        
+        if ([accessoriesViewController respondsToSelector:@selector(leftTopBarButton)]) {
+            [_contentView setLeftButton:[accessoriesViewController leftTopBarButton]];
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(rightTopBarButton)]) {
+            [_contentView setRightButton:[accessoriesViewController rightTopBarButton]];
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(bottomBarButtons)]) {
+            [_contentView setBottomBarButtons:[accessoriesViewController bottomBarButtons]];
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(centreTopView)]) {
+            [_contentView setTopCentreView:[accessoriesViewController centreTopView]];
+        }
+    }
+}
 
 -(void)setTint:(FPPopoverTint)tint
 {
@@ -650,7 +662,7 @@
     }
 
     _contentView.arrowDirection = bestDirection;
-    _contentView.frame = r;
+    _contentView.frame = CGRectIntegral(r);
 
     self.origin = CGPointMake(p.x + v.frame.size.width/2.0, p.y + v.frame.size.height/2.0);
     _contentView.relativeOrigin = [_parentView convertPoint:self.origin toView:_contentView];

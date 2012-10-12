@@ -40,6 +40,10 @@
     return [UIColor blackColor];
 }
 
+- (CGGradientRef)borderGradient {
+    return nil;
+}
+
 - (CGFloat)borderWidth {
     return 10.0f;
 }
