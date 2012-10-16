@@ -11,6 +11,7 @@
 
 #import "FPPopoverController.h"
 #import "FPPopoverAccessoriesProtocol.h"
+#import "FPPopoverStyle.h"
 
 @interface FPPopoverController(Private)
 -(CGPoint)originFromView:(UIView*)fromView;
@@ -69,6 +70,7 @@
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_viewController removeObserver:self forKeyPath:@"title"];
+    [_viewController removeObserver:self forKeyPath:@"contentSizeForViewInPopover"];
 }
 
 
@@ -123,6 +125,7 @@
         _contentView.clipsToBounds = NO;
         
         [_viewController addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
+        [_viewController addObserver:self forKeyPath:@"contentSizeForViewInPopover" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -179,8 +182,17 @@
 }
 
 - (void)setPopoverContentSize:(CGSize)popoverContentSize {
+    if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
+        popoverContentSize.width += _contentView.style.borderWidth * 2.0f;
+        popoverContentSize.height += _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+    } else {
+        popoverContentSize.width += _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
+        popoverContentSize.height += _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+    }
     self.contentSize = popoverContentSize;
-    _contentView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+    CGRect rect = _contentView.frame;
+    rect.size = popoverContentSize;
+    _contentView.frame = rect;// CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
 }
 
 - (UIViewController *)contentViewController {
@@ -453,6 +465,9 @@
     if(object == _viewController && [keyPath isEqualToString:@"title"])
     {
         _contentView.title = _viewController.title;
+        [_contentView setNeedsDisplay];
+    } else if (object == _viewController && [keyPath isEqualToString:@"contentSizeForViewInPopover"]) {
+        [self setPopoverContentSize:_viewController.contentSizeForViewInPopover];
         [_contentView setNeedsDisplay];
     }
 }
