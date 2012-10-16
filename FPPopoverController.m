@@ -100,11 +100,6 @@
         _touchView.clipsToBounds = NO;
         [self.view addSubview:_touchView];
         self.closesOnTapOff = YES;
-        
-        if ([viewController isKindOfClass:[UINavigationController class]]) {
-            viewController = ((UINavigationController*)viewController).topViewController;
-        }
-        
         self.contentSize = viewController.contentSizeForViewInPopover;
 
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
@@ -133,9 +128,15 @@
 }
 
 - (void)updateAccessories {
+    UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = nil;
     if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
-        UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
-        
+        accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
+    } else if ([_viewController isKindOfClass:[UINavigationController class]] &&
+               [[((UINavigationController*)_viewController).viewControllers objectAtIndex:0] conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
+        accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)[((UINavigationController*)_viewController).viewControllers objectAtIndex:0];
+    }
+
+    if (accessoriesViewController) {
         if ([accessoriesViewController respondsToSelector:@selector(leftTopBarButton)]) {
             [_contentView setLeftButton:[accessoriesViewController leftTopBarButton]];
         }
