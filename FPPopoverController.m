@@ -393,6 +393,8 @@
     self.inFrontView = nil;
     [inFrontViewsParentView release]; inFrontViewsParentView = nil;
     [backgroundDarkener release]; backgroundDarkener = nil;
+    [_touchView setTouchedOutsideBlock:nil];
+    [_touchView setTouchedInsideBlock:nil];
     [_window release]; _window=nil;
     [_parentView release]; _parentView=nil;
     [self viewDidDisappear:NO];
