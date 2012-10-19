@@ -102,6 +102,7 @@
         _touchView.clipsToBounds = NO;
         [self.view addSubview:_touchView];
         self.closesOnTapOff = YES;
+        self.closesOnTapOn = NO;
         self.contentSize = viewController.contentSizeForViewInPopover;
 
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
@@ -173,6 +174,16 @@
         }];
     } else {
         [_touchView setTouchedOutsideBlock:nil];
+    }
+}
+
+- (void)setClosesOnTapOn:(BOOL)closesOnTapOn {
+    if (closesOnTapOn) {
+        [_touchView setTouchedInsideBlock:^{
+            [self dismissPopoverAnimated:YES];
+        }];
+    } else {
+        [_touchView setTouchedInsideBlock:nil];
     }
 }
 

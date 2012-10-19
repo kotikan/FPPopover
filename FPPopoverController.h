@@ -83,6 +83,11 @@
  @property (nonatomic, assign) BOOL closesOnTapOff;
 
 /**
+ * @brief Whether to close the popover when a tap is detected that is inside the popover.
+ */
+@property (nonatomic, assign) BOOL closesOnTapOn;
+
+/**
  * @brief The color to set the area not covered by the popover.
  */
 @property (nonatomic, retain) UIColor *backgroundDarkenerColor;
