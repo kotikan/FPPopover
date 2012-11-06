@@ -103,7 +103,6 @@
     if ([_style frameView]) {
         [self addSubview:[_style frameView]];
         if (_contentView) {
-            [_style frameView].backgroundColor = _contentView.backgroundColor;
             [self bringSubviewToFront:_contentView];
         }
     }
@@ -135,9 +134,6 @@
             [_contentView.layer setMasksToBounds:YES];
         }
         [self addSubview:_contentView];
-        if ([_style frameView]) {
-            [_style frameView].backgroundColor = _contentView.backgroundColor;
-        }
     }
     [self setupViews];
 }
