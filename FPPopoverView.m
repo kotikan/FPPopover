@@ -317,10 +317,10 @@
 
     //the arrow will be near the origin
     CGFloat ax = self.relativeOrigin.x - aw; //the start of the arrow when UP or DOWN
-    if (ax < aw + b) {
-        ax = aw + b;
-    } else if (ax +2*aw + 2*b> self.bounds.size.width) {
-        ax = self.bounds.size.width - 2*aw - 2*b;
+    if (ax < radius + b) {
+        ax = radius + b;
+    } else if (ax > self.bounds.size.width - radius - (2*aw) - (2*b)) {
+        ax = self.bounds.size.width - radius - (2*aw) - (2*b);
     }
 
     //ROUNDED RECT
@@ -331,9 +331,9 @@
     CGFloat inside_top = innerRect.origin.y;
     CGFloat outside_top = rect.origin.y;
     CGMutablePathRef path = CGPathCreateMutable();
-    UIBezierPath *quarterCircle = [UIBezierPath bezierPathWithArcCenter:CGPointMake(inside_left, inside_top)
+    UIBezierPath *quarterCircle = [UIBezierPath bezierPathWithArcCenter:CGPointMake(inside_left - ([_style topEdgeHighlightWidth]/2), inside_top)
                                                                  radius:radius
-                                                             startAngle:5.0f * M_PI / 4.0f
+                                                             startAngle:7.0f * M_PI / 6.0f
                                                                endAngle:3.0f * M_PI / 2.0f
                                                               clockwise:YES];
     CGPathAddPath(path, NULL, quarterCircle.CGPath);
@@ -343,10 +343,10 @@
         CGPathAddLineToPoint(path, NULL, ax+2*aw, ah+b);
     }
     CGPathAddLineToPoint(path, NULL, inside_right, outside_top);
-    quarterCircle = [UIBezierPath bezierPathWithArcCenter:CGPointMake(inside_right, inside_top)
+    quarterCircle = [UIBezierPath bezierPathWithArcCenter:CGPointMake(inside_right + ([_style topEdgeHighlightWidth]/2), inside_top)
                                                    radius:radius
                                                startAngle:3.0f * M_PI / 2.0f
-                                                 endAngle:7.0f * M_PI / 4.0f
+                                                 endAngle:11.0f * M_PI / 6.0f
                                                 clockwise:YES];
     CGPathAddPath(path, NULL, quarterCircle.CGPath);
 
@@ -363,17 +363,17 @@
 
     //the arrow will be near the origin
     CGFloat ax = self.relativeOrigin.x - aw; //the start of the arrow when UP or DOWN
-    if (ax < aw + b) {
-        ax = aw + b;
-    } else if (ax +2*aw + 2*b> self.bounds.size.width) {
-        ax = self.bounds.size.width - 2*aw - 2*b;
+    if (ax < radius + b) {
+        ax = radius + b;
+    } else if (ax > self.bounds.size.width - radius - (2*aw) - (2*b)) {
+        ax = self.bounds.size.width - radius - (2*aw) - (2*b);
     }
 
     CGFloat ay = self.relativeOrigin.y - aw; //the start of the arrow when RIGHT or LEFT
-    if (ay < aw + b) {
-        ay = aw + b;
-    } else if (ay +2*aw + 2*b > self.bounds.size.height) {
-        ay = self.bounds.size.height - 2*aw - 2*b;
+    if (ay < radius + b) {
+        ay = radius + b;
+    } else if (ay > self.bounds.size.height - radius - (2*aw) - (2*b)) {
+        ay = self.bounds.size.height - radius - (2*aw) - (2*b);
     }
     
     //ROUNDED RECT
@@ -481,7 +481,7 @@
 }
 
 - (void)drawTopEdgeHighlight:(CGContextRef)ctx {
-    CGPathRef topEdgePath = [self newTopEdgePathWithBorderWidth:3.0];
+    CGPathRef topEdgePath = [self newTopEdgePathWithBorderWidth:2.0];
     [self drawBorder:ctx withPath:topEdgePath color:[_style topEdgeHighlightColor] andWidth:[_style topEdgeHighlightWidth]];
     CGPathRelease(topEdgePath);
 }
