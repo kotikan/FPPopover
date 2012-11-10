@@ -114,6 +114,12 @@
 
         [_contentView setContentView:_viewController.view];
         [self updateAccessories];
+        
+        if ([_viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController*)_viewController;
+            navigationController.delegate = self;
+        }
+        
         _viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.view.clipsToBounds = NO;
@@ -135,9 +141,6 @@
     UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = nil;
     if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
         accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
-    } else if ([_viewController isKindOfClass:[UINavigationController class]] &&
-               [[((UINavigationController*)_viewController).viewControllers objectAtIndex:0] conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
-        accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)[((UINavigationController*)_viewController).viewControllers objectAtIndex:0];
     }
 
     if (accessoriesViewController) {
@@ -200,6 +203,8 @@
         popoverContentSize.width += _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
         popoverContentSize.height += _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
     }
+    popoverContentSize.width += _contentView.style.contentFrameInset.width * 2.0f;
+    popoverContentSize.height += _contentView.style.contentFrameInset.height * 2.0f;
     self.contentSize = popoverContentSize;
     CGRect rect = _contentView.frame;
     rect.size = popoverContentSize;
@@ -446,9 +451,17 @@
     _origin = origin;
 }
 
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [self updateAccessories];
+    self.title = viewController.title;
+    _contentView.title = viewController.title;
+    [self setPopoverContentSize:viewController.contentSizeForViewInPopover];
+    [_contentView setNeedsDisplay];
+}
+
 #pragma mark observing
-
-
 
 -(void)deviceOrientationDidChange:(NSNotification*)notification
 {
@@ -473,8 +486,7 @@
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if(object == _viewController && [keyPath isEqualToString:@"title"])
-    {
+    if(object == _viewController && [keyPath isEqualToString:@"title"]) {
         _contentView.title = _viewController.title;
         [_contentView setNeedsDisplay];
     } else if (object == _viewController && [keyPath isEqualToString:@"contentSizeForViewInPopover"]) {

@@ -44,7 +44,7 @@
 /**
 * A view-controller that mimics the behaviour of UIPopoverController but with more flexible styling options.
 */
-@interface FPPopoverController : UIViewController
+@interface FPPopoverController : UIViewController<UINavigationControllerDelegate>
 {
     FPTouchView *_touchView;
     FPPopoverView *_contentView;
