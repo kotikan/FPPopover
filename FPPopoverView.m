@@ -430,7 +430,7 @@
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     CGContextSaveGState(ctx);
 
-    CGPathRef contentPath = [self newContentPathWithBorderWidth:2.0];
+    CGPathRef contentPath = [self newContentPathWithBorderWidth:2.0f];
     CGContextAddPath(ctx, contentPath);
     CGContextClip(ctx);
     [self drawHeaderGradient:ctx];
