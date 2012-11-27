@@ -24,6 +24,8 @@
 
 @optional
 
+- (BOOL)popoverControllerWillDismissPopover:(FPPopoverController *)popoverController;
+
 /**
 * Called when a popover finishes closing.
 *
