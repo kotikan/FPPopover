@@ -136,4 +136,8 @@
     return 1.0f;
 }
 
+- (UIView*)overlayView {
+    return nil;
+}
+
 @end

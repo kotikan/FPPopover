@@ -171,4 +171,9 @@
 */
 - (CGFloat)innerContentFrameWidth;
 
+/**
+ * A view that will be drawn on top of the content-view-controller
+ */
+- (UIView*)overlayView;
+
 @end

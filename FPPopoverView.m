@@ -88,6 +88,7 @@
 - (void)setStyle:(FPPopoverStyle *)style {
     if (_style) {
         [_style.frameView removeFromSuperview];
+        [_style.overlayView removeFromSuperview];
     }
     [style retain];
     [_style release];
@@ -105,6 +106,11 @@
         if (_contentView) {
             [self bringSubviewToFront:_contentView];
         }
+    }
+    if ([_style overlayView]) {
+        _style.overlayView.frame = _contentView.frame;
+        [self addSubview:_style.overlayView];
+        [self bringSubviewToFront:_style.overlayView];
     }
     if (_style.contentCornerRadius > 0.0f && _contentView) {
         [_contentView.layer setCornerRadius:_style.contentCornerRadius];
@@ -642,6 +648,9 @@
         contentRect.origin.y += [_style contentFrameInset].height;
         contentRect.size.width -= 2.0f * [_style contentFrameInset].width;
         contentRect.size.height -= 2.0f * [_style contentFrameInset].height;
+    }
+    if (_style.overlayView) {
+        _style.overlayView.frame = contentRect;
     }
     _contentView.frame = contentRect;
     _titleLabel.text = self.title;
