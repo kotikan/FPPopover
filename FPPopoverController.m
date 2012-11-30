@@ -209,6 +209,7 @@
     CGRect rect = _contentView.frame;
     rect.size = popoverContentSize;
     _contentView.frame = rect;// CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+    [self setupView];
 }
 
 - (UIViewController *)contentViewController {
