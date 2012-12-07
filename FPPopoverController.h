@@ -34,6 +34,11 @@
 - (void)popoverControllerDidDismissPopover:(FPPopoverController *)popoverController;
 
 /**
+ * Called when a popover finishes appearing.
+ */
+- (void)popoverControllerDidDisplayPopover:(FPPopoverController *)popoverController;
+
+/**
 * Called by existing popovers when a new popover is shown.
 *
 * @param newPopoverController The new popover being shown.

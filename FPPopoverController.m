@@ -37,6 +37,7 @@
     UIView *backgroundDarkener;
     UIView *inFrontViewsParentView;
     CGRect inFrontViewsFrame;
+    BOOL dismissalAnimationInProgress;
 }
 
 @synthesize delegate = _delegate;
@@ -311,9 +312,11 @@
         {
             [_parentView release]; 
             _parentView = [[self containerViewFromWindow:_window] retain];
+            self.view.frame = CGRectMake(0, 0, [self parentWidth], [self parentHeight]);
             [self setupBackgroundDarkener];
             [self setupInFrontView];
             [_parentView addSubview:self.view];
+            [self.view bringSubviewToFront:_touchView];
         }
     } else {
         [self dismissPopoverAnimated:NO];
@@ -321,13 +324,18 @@
     
     [self viewWillAppear:NO];
     [self setupView];
-    self.view.alpha = 0.0;
-    [UIView animateWithDuration:0.2 animations:^{
-        self.view.alpha = 1.0;
-    }];
-    
+    _touchView.alpha = 0.0;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FPNewPopoverPresented" object:self];
-    [self viewDidAppear:NO];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        _touchView.alpha = 1.0;
+    }
+     completion:^(BOOL finished) {
+         if (_delegate && [_delegate respondsToSelector:@selector(popoverControllerDidDisplayPopover:)]) {
+             [_delegate popoverControllerDidDisplayPopover:self];
+         }
+         [self viewDidAppear:NO];
+    }];
 }
 
 - (void)setupInFrontView {
@@ -337,7 +345,7 @@
         CGRect newRect = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
         [_inFrontView removeFromSuperview];
         _inFrontView.frame = newRect;
-        [_parentView addSubview:_inFrontView];
+        [self.view addSubview:_inFrontView];
     }
 }
 
@@ -368,7 +376,7 @@
             backgroundDarkener = [[UIView alloc] initWithFrame:darkenerFrame];
             backgroundDarkener.backgroundColor = _backgroundDarkenerColor;
             backgroundDarkener.alpha = 0.0f;
-            [_parentView addSubview:backgroundDarkener];
+            [self.view addSubview:backgroundDarkener];
             [UIView animateWithDuration:0.2 animations:^{
                 backgroundDarkener.alpha = 1.0;
             }];
@@ -439,10 +447,15 @@
     }
     if(animated)
     {
+        if (dismissalAnimationInProgress) {
+            return;
+        }
+        dismissalAnimationInProgress = YES;
         [UIView animateWithDuration:0.2 animations:^{
-            self.view.alpha = 0.0;
+            _touchView.alpha = 0.0;
             backgroundDarkener.alpha = 0.0f;
         } completion:^(BOOL finished) {
+            dismissalAnimationInProgress = NO;
             [self dismissPopover];
         }];
     }
