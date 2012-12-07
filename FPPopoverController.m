@@ -440,8 +440,8 @@
 -(void)dismissPopoverAnimated:(BOOL)animated
 {
     if (_delegate
-        && [_delegate respondsToSelector:@selector(popoverControllerWillDismissPopover:)]
-        && [_delegate popoverControllerWillDismissPopover:self] == NO) {
+        && [_delegate respondsToSelector:@selector(popoverControllerWillDismissPopover:animated:)]
+        && [_delegate popoverControllerWillDismissPopover:self animated:animated] == NO) {
         DLog(@"Delegate %@ prevents popover from being dismissed", _delegate);
         return;
     }
