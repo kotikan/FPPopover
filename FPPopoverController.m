@@ -51,24 +51,12 @@
 
 -(void)addObservers
 {
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];   
-    
-    [[NSNotificationCenter defaultCenter] 
-     addObserver:self 
-     selector:@selector(deviceOrientationDidChange:) 
-     name:@"UIDeviceOrientationDidChangeNotification" 
-     object:nil]; 
-    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willPresentNewPopover:) name:@"FPNewPopoverPresented" object:nil];
-    
-    _deviceOrientation = [UIDevice currentDevice].orientation;
-    
 }
 
 -(void)removeObservers
 {
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_viewController removeObserver:self forKeyPath:@"title"];
     [_viewController removeObserver:self forKeyPath:@"contentSizeForViewInPopover"];
@@ -277,12 +265,11 @@
 -(CGFloat)parentWidth
 {
     return _parentView.bounds.size.width;
-    return UIDeviceOrientationIsPortrait(_deviceOrientation) ? _parentView.frame.size.width : _parentView.frame.size.height;
 }
+
 -(CGFloat)parentHeight
 {
     return _parentView.bounds.size.height;
-    return UIDeviceOrientationIsPortrait(_deviceOrientation) ? _parentView.frame.size.height : _parentView.frame.size.width;
 }
 
 - (UIView*)containerViewFromWindow:(UIWindow *)window {
@@ -482,15 +469,6 @@
 }
 
 #pragma mark observing
-
--(void)deviceOrientationDidChange:(NSNotification*)notification
-{
-    _deviceOrientation = [UIDevice currentDevice].orientation;
-    
-    [UIView animateWithDuration:0.2 animations:^{
-        [self setupView]; 
-    }];
-}
 
 -(void)willPresentNewPopover:(NSNotification*)notification
 {

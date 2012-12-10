@@ -59,7 +59,6 @@
     UIWindow *_window;
     UIView *_parentView;
     UIView *_fromView;
-    UIDeviceOrientation _deviceOrientation;
 }
 
 /**
