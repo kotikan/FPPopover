@@ -414,6 +414,7 @@
     {
         [self.delegate popoverControllerDidDismissPopover:self];
     }
+    self.delegate = nil;
     self.inFrontView = nil;
     [inFrontViewsParentView release]; inFrontViewsParentView = nil;
     [backgroundDarkener release]; backgroundDarkener = nil;
