@@ -683,16 +683,9 @@
         CGFloat widthAvailableForTitle = titleFrame.size.width;
         CGFloat widthReductionForButtons = 0.0f;
         
-        if (leftButton && rightButton) {
+        if (leftButton || rightButton) {
             widthReductionForButtons = MAX(leftButton.frame.size.width, rightButton.frame.size.width) + TitleHorizontalPadding;
             widthReductionForButtons *= 2.0f;
-        } else {
-            if (leftButton) {
-                widthReductionForButtons += leftButton.frame.size.width + TitleHorizontalPadding;
-            }
-            if (rightButton) {
-                widthReductionForButtons += rightButton.frame.size.width + TitleHorizontalPadding;
-            }
         }
         widthAvailableForTitle -= widthReductionForButtons;
         
