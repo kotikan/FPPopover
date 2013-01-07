@@ -16,6 +16,8 @@
 #import "FPPopoverGreenStyle.h"
 #import "FPPopoverRedStyle.h"
 
+#define TitleHorizontalPadding (2)
+
 @interface FPPopoverView(Private)
 -(void)setupViews;
 @end
@@ -117,6 +119,13 @@
         [_contentView.layer setMasksToBounds:YES];
     }
     [self setupViews];
+}
+
+- (void)setTitle:(NSString *)newTitle {
+    [newTitle retain];
+    [title release];
+    title = newTitle;
+    [self updateTitleLabel];
 }
 
 #pragma mark setters
@@ -598,8 +607,6 @@
         contentRect.origin = CGPointMake(_style.borderWidth, _style.arrowHeight + _style.topBarHeight);
         contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
                 self.bounds.size.height - (_style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight));
-        _titleLabel.frame = CGRectMake(_style.borderWidth, _style.arrowHeight + _style.borderWidth,
-                self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
 		if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth, _style.arrowHeight + _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
@@ -609,8 +616,6 @@
         contentRect.origin = CGPointMake(_style.borderWidth, _style.topBarHeight);
         contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
                 self.bounds.size.height-(_style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight));
-        _titleLabel.frame = CGRectMake(_style.borderWidth, _style.borderWidth,
-                self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
         if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth, _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - 2.0f * _style.borderWidth,
@@ -620,9 +625,6 @@
         contentRect.origin = CGPointMake(_style.borderWidth, _style.topBarHeight);
         contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                 self.bounds.size.height - (_style.topBarHeight + _style.bottomBarHeight));
-        _titleLabel.frame = CGRectMake(_style.borderWidth, _style.borderWidth,
-                self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
-                _style.topBarHeight - 2.0f * _style.borderWidth);
         if (self.title == nil) {
             contentRect.origin = CGPointMake(_style.borderWidth, _style.borderWidth);
 			contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
@@ -632,9 +634,6 @@
         contentRect.origin = CGPointMake(_style.borderWidth + _style.arrowHeight, _style.topBarHeight);
         contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
                 self.bounds.size.height - (_style.topBarHeight + _style.bottomBarHeight));
-        _titleLabel.frame = CGRectMake(_style.borderWidth + _style.arrowHeight, _style.borderWidth,
-                self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
-                _style.topBarHeight - 2.0f * _style.borderWidth);
         if (self.title == nil) {
 			contentRect.origin = CGPointMake(_style.borderWidth + _style.arrowHeight, _style.borderWidth);
             contentRect.size = CGSizeMake(self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
@@ -653,11 +652,60 @@
         _style.overlayView.frame = contentRect;
     }
     _contentView.frame = contentRect;
-    _titleLabel.text = self.title;
     [self updateLeftButtonFrame];
     [self updateRightButtonFrame];
     [self updateTopCentreViewFrame];
     [self updateBottomBarButtonFrames];
+    [self updateTitleLabel];
+}
+
+- (void)updateTitleLabel {
+    _titleLabel.text = self.title;
+    if (self.title != nil && _arrowDirection != 0) {
+        CGRect titleFrame = CGRectZero;
+        
+        if (_arrowDirection == FPPopoverArrowDirectionUp) {
+            titleFrame = CGRectMake(_style.borderWidth, _style.arrowHeight + _style.borderWidth,
+                                           self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
+        } else if (_arrowDirection == FPPopoverArrowDirectionDown) {
+            titleFrame = CGRectMake(_style.borderWidth, _style.borderWidth,
+                                           self.bounds.size.width - 2.0f * _style.borderWidth, _style.topBarHeight - 2.0f * _style.borderWidth);
+        } else if (_arrowDirection == FPPopoverArrowDirectionRight) {
+            titleFrame = CGRectMake(_style.borderWidth, _style.borderWidth,
+                                           self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
+                                           _style.topBarHeight - 2.0f * _style.borderWidth);
+        } else if (_arrowDirection == FPPopoverArrowDirectionLeft) {
+            titleFrame = CGRectMake(_style.borderWidth + _style.arrowHeight, _style.borderWidth,
+                                           self.bounds.size.width - (_style.arrowHeight + 2.0f * _style.borderWidth),
+                                           _style.topBarHeight - 2.0f * _style.borderWidth);
+        }
+        
+        CGFloat widthAvailableForTitle = titleFrame.size.width;
+        CGFloat widthReductionForButtons = 0.0f;
+        
+        if (leftButton && rightButton) {
+            widthReductionForButtons = MAX(leftButton.frame.size.width, rightButton.frame.size.width) + TitleHorizontalPadding;
+            widthReductionForButtons *= 2.0f;
+        } else {
+            if (leftButton) {
+                widthReductionForButtons += leftButton.frame.size.width + TitleHorizontalPadding;
+            }
+            if (rightButton) {
+                widthReductionForButtons += rightButton.frame.size.width + TitleHorizontalPadding;
+            }
+        }
+        widthAvailableForTitle -= widthReductionForButtons;
+        
+        CGFloat adjustedFontSize;
+        
+        [title sizeWithFont:_titleLabel.font
+                minFontSize:10.0f
+             actualFontSize:&adjustedFontSize
+                   forWidth:widthAvailableForTitle
+              lineBreakMode:UILineBreakModeTailTruncation];
+        _titleLabel.font = [_titleLabel.font fontWithSize:adjustedFontSize];
+        _titleLabel.frame = titleFrame;
+    }
 }
 
 -(void)layoutSubviews {
