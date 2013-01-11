@@ -691,8 +691,8 @@
         
         CGFloat adjustedFontSize;
         
-        [title sizeWithFont:_titleLabel.font
-                minFontSize:10.0f
+        [title sizeWithFont:_style.titleFont
+                minFontSize:8.0f
              actualFontSize:&adjustedFontSize
                    forWidth:widthAvailableForTitle
               lineBreakMode:UILineBreakModeTailTruncation];
