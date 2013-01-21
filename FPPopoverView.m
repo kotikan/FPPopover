@@ -225,7 +225,7 @@
     CGRect firstButtonFrame = firstButton.frame;
     CGFloat y = (outerRect.origin.y + outerRect.size.height) - (_style.borderWidth + firstButtonFrame.size.height);
     if (gaps <= 0) {
-        firstButtonFrame.origin.x = _style.borderWidth + (widthForButtons - buttonWidths) * 0.5f;
+        firstButtonFrame.origin.x = outerRect.origin.x + _style.borderWidth + (widthForButtons - buttonWidths) * 0.5f;
         firstButtonFrame.origin.y = y;
         firstButton.frame = CGRectIntegral(firstButtonFrame);
     } else {
