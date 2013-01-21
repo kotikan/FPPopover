@@ -40,6 +40,9 @@
     self.style = nil;
     [_contentView release];
     [_titleLabel release];
+    [bottomBarButtons release];
+    [leftButton release];
+    [rightButton release];
     [super dealloc];
 }
 

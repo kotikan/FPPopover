@@ -72,6 +72,7 @@
     [_window release];
     [_parentView release];
     [backgroundDarkener release];
+    [_backgroundDarkenerColor release];
     self.delegate = nil;
     [inFrontViewsParentView release]; inFrontViewsParentView = nil;
     self.inFrontView = nil;
