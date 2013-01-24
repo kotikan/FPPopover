@@ -156,4 +156,8 @@
     return 0.7f;
 }
 
+- (BOOL)hasTapOffNoCloseAnimation {
+    return NO;
+}
+
 @end

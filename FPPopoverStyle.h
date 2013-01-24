@@ -185,4 +185,6 @@
 
 - (CGFloat)shadowOpacity;
 
+- (BOOL)hasTapOffNoCloseAnimation;
+
 @end

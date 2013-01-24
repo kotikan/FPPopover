@@ -166,7 +166,11 @@
             [self dismissPopoverAnimated:YES];
         }];
     } else {
-        [_touchView setTouchedOutsideBlock:[_contentView touchedOutsideBlock]];
+        if (_contentView.style.hasTapOffNoCloseAnimation) {
+            [_touchView setTouchedOutsideBlock:[_contentView touchedOutsideBlock]];
+        } else {
+            [_touchView setTouchedOutsideBlock:nil];
+        }
     }
 }
 
