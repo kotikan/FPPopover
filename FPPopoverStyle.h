@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FPTouchView.h"
 
 @interface FPPopoverStyle : NSObject
 
@@ -175,5 +176,13 @@
  * A view that will be drawn on top of the content-view-controller
  */
 - (UIView*)overlayView;
+
+- (void)animateWithPortion:(CGFloat)portion;
+
+- (UIColor*)shadowColor;
+
+- (CGFloat)shadowRadius;
+
+- (CGFloat)shadowOpacity;
 
 @end

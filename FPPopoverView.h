@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import "FPTouchView.h"
 
 @class FPPopoverStyle;
 
@@ -123,5 +124,7 @@ typedef enum {
 * @param buttons An array of UIButton buttons.
 */
 - (void)setBottomBarButtons:(NSArray *)buttons;
+
+- (FPTouchedOutsideBlock)touchedOutsideBlock;
 
 @end

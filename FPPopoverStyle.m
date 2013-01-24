@@ -140,4 +140,20 @@
     return nil;
 }
 
+- (void)animateWithPortion:(CGFloat)portion {
+    
+}
+
+- (UIColor*)shadowColor {
+    return [UIColor blackColor];
+}
+
+- (CGFloat)shadowRadius {
+    return 5.0f;
+}
+
+- (CGFloat)shadowOpacity {
+    return 0.7f;
+}
+
 @end

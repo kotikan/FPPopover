@@ -17,6 +17,11 @@
 #import "FPPopoverRedStyle.h"
 
 #define TitleHorizontalPadding (2)
+#define StylingAnimationDurationIn (0.3)
+#define StylingAnimationDurationPause (0.3)
+#define StylingAnimationDurationOut (0.3)
+
+float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 
 @interface FPPopoverView(Private)
 -(void)setupViews;
@@ -28,6 +33,8 @@
     UIButton *rightButton;
     NSArray *bottomBarButtons;
     UIView *topCentreView;
+    NSTimer *animationTimer;
+    NSTimeInterval animationStartTime;
 }
 
 @synthesize title;
@@ -43,6 +50,7 @@
     [bottomBarButtons release];
     [leftButton release];
     [rightButton release];
+    [animationTimer invalidate];
     [super dealloc];
 }
 
@@ -106,6 +114,9 @@
     _titleLabel.shadowColor = _style.titleShadowColor;
     _titleLabel.shadowOffset = _style.titleShadowOffset;
     _titleLabel.font = _style.titleFont;
+    self.layer.shadowOpacity = _style.shadowOpacity;
+    self.layer.shadowColor = _style.shadowColor.CGColor;
+    self.layer.shadowRadius = _style.shadowRadius;
     if ([_style frameView]) {
         [self addSubview:[_style frameView]];
         if (_contentView) {
@@ -717,6 +728,48 @@
 -(void)setBounds:(CGRect)bounds {
     [super setBounds:bounds];
     [self setupViews];
+}
+
+- (FPTouchedOutsideBlock)touchedOutsideBlock {
+    FPTouchedOutsideBlock block = ^{
+        if (animationTimer != nil) {
+            [animationTimer invalidate];
+            animationTimer = nil;
+        }
+        animationStartTime = [[NSDate date] timeIntervalSinceReferenceDate];
+        animationTimer = [NSTimer scheduledTimerWithTimeInterval:0.0167f
+                                                          target:self
+                                                        selector:@selector(styleAnimation:)
+                                                        userInfo:nil
+                                                         repeats:YES];
+    };
+    return [[block copy] autorelease];
+}
+
+- (void)styleAnimation:(NSTimer*)timer {
+    NSTimeInterval now = [[NSDate date] timeIntervalSinceReferenceDate];
+    NSTimeInterval interval = now - animationStartTime;
+    CGFloat portion = 0.0f;
+    
+    if (interval <= StylingAnimationDurationIn) {
+        portion = (CGFloat)(interval / StylingAnimationDurationIn);
+        portion = fade(portion);
+    } else if (interval <= StylingAnimationDurationIn + StylingAnimationDurationPause) {
+        portion = 1.0f;
+    } else if (interval <= StylingAnimationDurationIn + StylingAnimationDurationPause + StylingAnimationDurationOut) {
+        portion = 1.0f - ((interval - (StylingAnimationDurationIn + StylingAnimationDurationPause)) / StylingAnimationDurationOut);
+        portion = fade(portion);
+    } else {
+        [animationTimer invalidate];
+        animationTimer = nil;
+        return;
+    }
+    
+    [_style animateWithPortion:portion];
+    self.layer.shadowOpacity = _style.shadowOpacity;
+    self.layer.shadowColor = _style.shadowColor.CGColor;
+    self.layer.shadowRadius = _style.shadowRadius;
+    [self setNeedsDisplay];
 }
 
 @end
