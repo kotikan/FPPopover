@@ -8,13 +8,48 @@
 
 #import "FPTouchView.h"
 
-@implementation FPTouchView
+@implementation FPTouchView {
+    BOOL keyboardVisible;
+    CGRect keyboardRect;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [[NSNotificationCenter defaultCenter]  addObserver:self
+                                                  selector:@selector(keyboardHidden:)
+                                                      name:UIKeyboardDidHideNotification
+                                                    object:nil];
+        
+        [[NSNotificationCenter defaultCenter]  addObserver:self
+                                                  selector:@selector(keyboardShown:)
+                                                      name:UIKeyboardDidShowNotification
+                                                    object:nil];
+
+    }
+    return self;
+}
+
 
 -(void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
     [_outsideBlock release];
     [_insideBlock release];
     [super dealloc];
+}
+
+- (void)keyboardShown:(NSNotification *)note {
+    keyboardVisible = YES;
+    NSDictionary *keyboardInfo = note.userInfo;
+    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    
+    [endRectValue getValue:(void *)&keyboardRect];
+}
+
+- (void)keyboardHidden:(NSNotification *)note {
+    keyboardVisible = NO;
 }
 
 -(void)setTouchedOutsideBlock:(FPTouchedOutsideBlock)outsideBlock
@@ -55,7 +90,19 @@
         }
         else if(!touchedInside && _outsideBlock)
         {
-            _outsideBlock();
+            BOOL outside = YES;
+            
+            if (keyboardVisible) {
+                CGRect transformedKeyboardRect = [self.window convertRect:keyboardRect toView:self];
+
+                if (CGRectContainsPoint(transformedKeyboardRect, point)) {
+                    outside = NO;
+                }
+            }
+            
+            if (outside) {
+                _outsideBlock();
+            }
         }
     }
     
