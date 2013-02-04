@@ -667,7 +667,10 @@
             r.origin.y = p.y + v.frame.size.height/2.0 - r.size.height/2.0;
         }
         
-
+        if(r.origin.y + r.size.height > [self parentHeight] && r.origin.y > 0)
+        {
+            r.origin.y = [self parentHeight] - r.size.height;
+        }
     }
     
     
