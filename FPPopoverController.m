@@ -37,7 +37,11 @@
     UIView *backgroundDarkener;
     UIView *inFrontViewsParentView;
     CGRect inFrontViewsFrame;
+    CGSize contentSizeWithoutKeyboard;
+    CGPoint originToMaintain;
+    BOOL keyboardVisible;
     BOOL dismissalAnimationInProgress;
+    BOOL maintainOrigin;
 }
 
 @synthesize delegate = _delegate;
@@ -53,6 +57,14 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willPresentNewPopover:) name:@"FPNewPopoverPresented" object:nil];
+    [[NSNotificationCenter defaultCenter]  addObserver:self
+                                              selector:@selector(keyboardWillHide:)
+                                                  name:UIKeyboardWillHideNotification
+                                                object:nil];
+    [[NSNotificationCenter defaultCenter]  addObserver:self
+                                              selector:@selector(keyboardShown:)
+                                                  name:UIKeyboardDidShowNotification
+                                                object:nil];
 }
 
 -(void)removeObservers
@@ -94,6 +106,8 @@
         self.closesOnTapOff = YES;
         self.closesOnTapOn = NO;
         self.contentSize = viewController.contentSizeForViewInPopover;
+        contentSizeWithoutKeyboard = self.contentSize;
+        keyboardVisible = NO;
 
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
                                               self.contentSize.width, self.contentSize.height)];
@@ -190,6 +204,9 @@
 }
 
 - (void)setPopoverContentSize:(CGSize)popoverContentSize {
+    if (!keyboardVisible) {
+        contentSizeWithoutKeyboard = popoverContentSize;
+    }
     if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
         popoverContentSize.width += _contentView.style.borderWidth * 2.0f;
         popoverContentSize.height += _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
@@ -499,11 +516,74 @@
         _contentView.title = _viewController.title;
         [_contentView setNeedsDisplay];
     } else if (object == _viewController && [keyPath isEqualToString:@"contentSizeForViewInPopover"]) {
-        [self setPopoverContentSize:_viewController.contentSizeForViewInPopover];
+        id newSizeValue = [change objectForKey:NSKeyValueChangeNewKey];
+        CGSize newSize;
+        
+        [newSizeValue getValue:&newSize];
+        [self setPopoverContentSize:newSize];
         [_contentView setNeedsDisplay];
     }
 }
 
+#pragma mark Notification handlers
+
+- (void)keyboardShown:(NSNotification *)note {
+    if (self.view.window == nil ||
+        !_popoverVisible) {
+        return;
+    }
+    keyboardVisible = YES;
+
+    NSDictionary *keyboardInfo = note.userInfo;
+    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect;
+    
+    [endRectValue getValue:(void *)&keyboardRect];
+    
+    CGRect transformedKeyboardRect = [self.view.window convertRect:keyboardRect toView:self.view];
+    CGRect visibleRect = _contentView.frame;
+    
+    if (CGRectIntersectsRect(visibleRect, transformedKeyboardRect)) {
+        CGRect intersection = CGRectIntersection(visibleRect, transformedKeyboardRect);
+        CGSize newSize = visibleRect.size;
+        
+        if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
+            newSize.width -= _contentView.style.borderWidth * 2.0f;
+            newSize.height -= _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+        } else {
+            newSize.width -= _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
+            newSize.height -= _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+        }
+        newSize.width -= _contentView.style.contentFrameInset.width * 2.0f;
+        newSize.height -= _contentView.style.contentFrameInset.height * 2.0f;
+        newSize.height -= intersection.size.height;
+        
+        if ([_viewController isKindOfClass:[UINavigationController class]]
+            && [(UINavigationController*)_viewController topViewController]) {
+            [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = newSize;
+        }
+        maintainOrigin = YES;
+        originToMaintain = _contentView.frame.origin;
+        _viewController.contentSizeForViewInPopover = newSize;
+        maintainOrigin = NO;
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification *)note {
+    if (self.view.window == nil ||
+        !_popoverVisible) {
+        return;
+    }
+    if ([_viewController isKindOfClass:[UINavigationController class]]
+        && [(UINavigationController*)_viewController topViewController]) {
+        [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = contentSizeWithoutKeyboard;
+    }
+    maintainOrigin = YES;
+    originToMaintain = _contentView.frame.origin;
+    _viewController.contentSizeForViewInPopover = contentSizeWithoutKeyboard;
+    maintainOrigin = NO;
+    keyboardVisible = NO;
+}
 
 #pragma mark Space management
 /* This methods helps the controller to found a proper way to display the view.
@@ -687,13 +767,14 @@
         r.origin.x = 0;
     }
     
+    if (maintainOrigin) {
+        r.origin = originToMaintain;
+    }
     
     //need to move up?
     if(r.origin.y < 0)
     {
-        CGFloat old_y = r.origin.y;
         r.origin.y = 0;
-        r.size.height += old_y;
     }
     
     //need to be resized horizontally ?
@@ -711,7 +792,7 @@
     
     if([[UIApplication sharedApplication] isStatusBarHidden] == NO)
     {
-        if(r.origin.y <= 20) r.origin.y += 20;
+        if(r.origin.y < 20) r.origin.y += 20;
     }
 
     _contentView.arrowDirection = bestDirection;
