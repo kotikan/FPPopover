@@ -675,40 +675,26 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 }
 
 - (void)updateContentStretch {
-    CGRect stretch = { CGPointZero, _contentView.frame.size };
-    CGSize fullSize = CGSizeZero;
-    
-    if (FPPopoverArrowDirectionIsVertical(_arrowDirection)) {
-        fullSize.width = _contentView.frame.size.width + 2.0f * _style.borderWidth;
-        fullSize.height = _contentView.frame.size.height + _style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight;
-        stretch.origin.x = _style.borderWidth;
-        
-        if (_arrowDirection == FPPopoverArrowDirectionUp) {
-            stretch.origin.y = _style.arrowHeight + _style.topBarHeight;
-        } else {
-            stretch.origin.y = _style.topBarHeight;
-        }
-    } else {
-        fullSize.width = _contentView.frame.size.width + _style.arrowHeight + 2.0f * _style.borderWidth;
-        fullSize.height = _contentView.frame.size.height + _style.topBarHeight + _style.bottomBarHeight;
-        stretch.origin.y = _style.topBarHeight;
-        
-        if (_arrowDirection == FPPopoverArrowDirectionLeft) {
-            stretch.origin.x = _style.arrowHeight + _style.borderWidth;
-        } else {
-            stretch.origin.x = _style.borderWidth;
-        }
-    }
-    
+    CGSize fullSize = [self visibleSize];
+
     if (fullSize.width <= 0.0f ||
         fullSize.height <= 0.0f) {
         return;
     }
-    
-    self.contentStretch = CGRectMake(stretch.origin.x / fullSize.width,
-                                     stretch.origin.y / fullSize.height,
-                                     stretch.size.width / fullSize.width,
-                                     stretch.size.height / fullSize.height);
+    self.contentStretch = CGRectMake(_contentView.frame.origin.x / fullSize.width,
+                                     _contentView.frame.origin.y / fullSize.height,
+                                     _contentView.frame.size.width / fullSize.width,
+                                     _contentView.frame.size.height / fullSize.height);
+}
+
+- (CGSize)visibleSize {
+    if (FPPopoverArrowDirectionIsVertical(_arrowDirection)) {
+        return CGSizeMake(_contentView.frame.size.width + 2.0f * _style.borderWidth,
+                          _contentView.frame.size.height + _style.arrowHeight + _style.topBarHeight + _style.bottomBarHeight);
+    } else {
+        return CGSizeMake(_contentView.frame.size.width + _style.arrowHeight + 2.0f * _style.borderWidth,
+                          _contentView.frame.size.height + _style.topBarHeight + _style.bottomBarHeight);
+    }
 }
 
 - (void)updateTitleLabel {
