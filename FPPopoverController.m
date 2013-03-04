@@ -207,15 +207,9 @@
     if (!keyboardVisible) {
         contentSizeWithoutKeyboard = popoverContentSize;
     }
-    if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
-        popoverContentSize.width += _contentView.style.borderWidth * 2.0f;
-        popoverContentSize.height += _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
-    } else {
-        popoverContentSize.width += _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
-        popoverContentSize.height += _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
-    }
-    popoverContentSize.width += _contentView.style.contentFrameInset.width * 2.0f;
-    popoverContentSize.height += _contentView.style.contentFrameInset.height * 2.0f;
+    CGSize nonContentSize = [self nonContentSize];
+    popoverContentSize.width += nonContentSize.width;
+    popoverContentSize.height += nonContentSize.height;
     self.contentSize = popoverContentSize;
     CGRect rect = _contentView.frame;
     rect.size = popoverContentSize;
@@ -533,39 +527,10 @@
         return;
     }
     keyboardVisible = YES;
-
-    NSDictionary *keyboardInfo = note.userInfo;
-    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGRect keyboardRect;
+    CGRect keyboardRect = [self keyboardFrameInThisWindowFromNotification:note];
     
-    [endRectValue getValue:(void *)&keyboardRect];
-    
-    CGRect transformedKeyboardRect = [self.view.window convertRect:keyboardRect toView:self.view];
-    CGRect visibleRect = _contentView.frame;
-    
-    if (CGRectIntersectsRect(visibleRect, transformedKeyboardRect)) {
-        CGRect intersection = CGRectIntersection(visibleRect, transformedKeyboardRect);
-        CGSize newSize = visibleRect.size;
-        
-        if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
-            newSize.width -= _contentView.style.borderWidth * 2.0f;
-            newSize.height -= _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
-        } else {
-            newSize.width -= _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
-            newSize.height -= _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
-        }
-        newSize.width -= _contentView.style.contentFrameInset.width * 2.0f;
-        newSize.height -= _contentView.style.contentFrameInset.height * 2.0f;
-        newSize.height -= intersection.size.height;
-        
-        if ([_viewController isKindOfClass:[UINavigationController class]]
-            && [(UINavigationController*)_viewController topViewController]) {
-            [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = newSize;
-        }
-        maintainOrigin = YES;
-        originToMaintain = _contentView.frame.origin;
-        _viewController.contentSizeForViewInPopover = newSize;
-        maintainOrigin = NO;
+    if (CGRectIntersectsRect(_contentView.frame, keyboardRect)) {
+        [self shrinkToAccomodateKeyboard:keyboardRect];
     }
 }
 
@@ -574,15 +539,56 @@
         !_popoverVisible) {
         return;
     }
+    [self setContentSizeMaintainingOrigin:contentSizeWithoutKeyboard];
+    keyboardVisible = NO;
+}
+
+- (CGRect)keyboardFrameInThisWindowFromNotification:(NSNotification *)note {
+    NSDictionary *keyboardInfo = note.userInfo;
+    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect;
+    
+    [endRectValue getValue:(void *)&keyboardRect];
+    
+    return [self.view.window convertRect:keyboardRect toView:self.view];
+}
+
+- (void)shrinkToAccomodateKeyboard:(CGRect)keyboardRect {
+    CGRect intersection = CGRectIntersection(_contentView.frame, keyboardRect);
+    CGSize newSize = _contentView.frame.size;
+    CGSize nonContentSize = [self nonContentSize];
+    
+    newSize.width -= nonContentSize.width;
+    newSize.height -= nonContentSize.height;
+    newSize.height -= intersection.size.height;
+    [self setContentSizeMaintainingOrigin:newSize];
+}
+
+- (CGSize)nonContentSize {
+    CGSize size = CGSizeZero;
+    
+    if (FPPopoverArrowDirectionIsVertical(_contentView.arrowDirection)) {
+        size.width += _contentView.style.borderWidth * 2.0f;
+        size.height += _contentView.style.arrowHeight + _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+    } else {
+        size.width += _contentView.style.arrowHeight + _contentView.style.borderWidth * 2.0f;
+        size.height += _contentView.style.topBarHeight + _contentView.style.bottomBarHeight;
+    }
+    size.width += _contentView.style.contentFrameInset.width * 2.0f;
+    size.height += _contentView.style.contentFrameInset.height * 2.0f;
+
+    return size;
+}
+
+- (void)setContentSizeMaintainingOrigin:(CGSize)newContentSize {
     if ([_viewController isKindOfClass:[UINavigationController class]]
         && [(UINavigationController*)_viewController topViewController]) {
-        [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = contentSizeWithoutKeyboard;
+        [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = newContentSize;
     }
     maintainOrigin = YES;
     originToMaintain = _contentView.frame.origin;
-    _viewController.contentSizeForViewInPopover = contentSizeWithoutKeyboard;
+    _viewController.contentSizeForViewInPopover = newContentSize;
     maintainOrigin = NO;
-    keyboardVisible = NO;
 }
 
 #pragma mark Space management
