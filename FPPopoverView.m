@@ -681,10 +681,10 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         fullSize.height <= 0.0f) {
         return;
     }
-    self.contentStretch = CGRectMake(_contentView.frame.origin.x / fullSize.width,
-                                     _contentView.frame.origin.y / fullSize.height,
-                                     _contentView.frame.size.width / fullSize.width,
-                                     _contentView.frame.size.height / fullSize.height);
+    self.layer.contentsCenter = CGRectMake(_contentView.frame.origin.x / fullSize.width,
+                                           _contentView.frame.origin.y / fullSize.height,
+                                           _contentView.frame.size.width / fullSize.width,
+                                           _contentView.frame.size.height / fullSize.height);
 }
 
 - (CGSize)visibleSize {
