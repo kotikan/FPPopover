@@ -342,7 +342,7 @@
 }
 
 - (void)setupInFrontView {
-    if (backgroundDarkener && _inFrontView) {
+    if (backgroundDarkener && _inFrontView && _inFrontView.superview != self.view) {
         inFrontViewsParentView = [_inFrontView.superview retain];
         inFrontViewsFrame = _inFrontView.frame;
         CGRect newRect = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
@@ -353,7 +353,7 @@
 }
 
 - (void)revertInFrontView {
-    if (_inFrontView && inFrontViewsParentView) {
+    if (_inFrontView && inFrontViewsParentView && _inFrontView.superview == self.view) {
         [_inFrontView removeFromSuperview];
         _inFrontView.frame = inFrontViewsFrame;
         if (inFrontViewsParentView.superview) {
