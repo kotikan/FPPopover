@@ -47,7 +47,6 @@
 - (void)dealloc {
     CGGradientRelease(topBarGradientForTopArrow);
     CGGradientRelease(topBarGradientForBottomArrow);
-    [super dealloc];
 }
 
 @end

@@ -64,7 +64,7 @@
 /**
 * A delegate that will be informed of popovers being shown and dismissed.
 */
-@property(nonatomic,assign) id<FPPopoverControllerDelegate> delegate;
+@property(nonatomic,weak) id<FPPopoverControllerDelegate> delegate;
 
 /** @brief FPPopoverArrowDirectionAny, FPPopoverArrowDirectionVertical or FPPopoverArrowDirectionHorizontal for automatic arrow direction.
  **/
@@ -96,12 +96,12 @@
 /**
  * @brief The color to set the area not covered by the popover.
  */
-@property (nonatomic, retain) UIColor *backgroundDarkenerColor;
+@property (nonatomic, strong) UIColor *backgroundDarkenerColor;
 
 /**
  * @brief A view to keep in front of the background view but behind the popover
  */
-@property (nonatomic, retain) UIView *inFrontView;
+@property (nonatomic, strong) UIView *inFrontView;
 
 @property (nonatomic, readonly) BOOL popoverVisible;
 

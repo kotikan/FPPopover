@@ -43,15 +43,8 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 @synthesize style = _style;
 
 -(void)dealloc {
-    self.title = nil;
     self.style = nil;
-    [_contentView release];
-    [_titleLabel release];
-    [bottomBarButtons release];
-    [leftButton release];
-    [rightButton release];
     [animationTimer invalidate];
-    [super dealloc];
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -83,17 +76,17 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 - (void)setTint:(FPPopoverTint)tint {
     switch (tint) {
         case FPPopoverLightGrayTint:
-            self.style = [[[FPPopoverLightGrayStyle alloc] init] autorelease];
+            self.style = [[FPPopoverLightGrayStyle alloc] init];
             break;
         case FPPopoverGreenTint:
-            self.style = [[[FPPopoverGreenStyle alloc] init] autorelease];
+            self.style = [[FPPopoverGreenStyle alloc] init];
             break;
         case FPPopoverRedTint:
-            self.style = [[[FPPopoverRedStyle alloc] init] autorelease];
+            self.style = [[FPPopoverRedStyle alloc] init];
             break;
         case FPPopoverBlackTint:
         default:
-            self.style = [[[FPPopoverBlackStyle alloc] init] autorelease];
+            self.style = [[FPPopoverBlackStyle alloc] init];
             break;
     }
 }
@@ -103,8 +96,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         [_style.frameView removeFromSuperview];
         [_style.overlayView removeFromSuperview];
     }
-    [style retain];
-    [_style release];
     _style = style;
     if (!_style) {
         return;
@@ -136,8 +127,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 }
 
 - (void)setTitle:(NSString *)newTitle {
-    [newTitle retain];
-    [title release];
     title = newTitle;
     [self updateTitleLabel];
 }
@@ -156,8 +145,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 -(void)setContentView:(UIView *)contentView {
     if(_contentView != contentView) {
         [_contentView removeFromSuperview];
-        [_contentView release];
-        _contentView = [contentView retain];
+        _contentView = contentView;
         if (_style.contentCornerRadius > 0.0f) {
             [_contentView.layer setCornerRadius:_style.contentCornerRadius];
             [_contentView.layer setMasksToBounds:YES];
@@ -171,8 +159,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     if (leftButton) {
         [leftButton removeFromSuperview];
     }
-    [button retain];
-    [leftButton release];
     leftButton = button;
     if (!button) {
         return;
@@ -185,8 +171,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     if (rightButton) {
         [rightButton removeFromSuperview];
     }
-    [button retain];
-    [rightButton release];
     rightButton = button;
     if (!button) {
         return;
@@ -199,8 +183,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     if (topCentreView) {
         [topCentreView removeFromSuperview];
     }
-    [view retain];
-    [topCentreView release];
     topCentreView = view;
     if (!topCentreView) {
         return;
@@ -215,8 +197,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
             [button removeFromSuperview];
         }
     }
-    [buttons retain];
-    [bottomBarButtons release];
     bottomBarButtons = buttons;
     if (!buttons) {
         return;
@@ -767,7 +747,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
                                                         userInfo:nil
                                                          repeats:YES];
     };
-    return [[block copy] autorelease];
+    return [block copy];
 }
 
 - (void)styleAnimation:(NSTimer*)timer {

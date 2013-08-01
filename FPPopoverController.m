@@ -78,17 +78,8 @@
 -(void)dealloc
 {
     [self removeObservers];
-    [_touchView release];
-    [_viewController release];
-    [_contentView release];
-    [_window release];
-    [_parentView release];
-    [backgroundDarkener release];
-    [_backgroundDarkenerColor release];
     self.delegate = nil;
-    [inFrontViewsParentView release]; inFrontViewsParentView = nil;
-    self.inFrontView = nil;
-    [super dealloc];
+     inFrontViewsParentView = nil;
 }
 
 
@@ -112,7 +103,7 @@
         _contentView = [[FPPopoverView alloc] initWithFrame:CGRectMake(0, 0, 
                                               self.contentSize.width, self.contentSize.height)];
         
-        _viewController = [viewController retain];
+        _viewController = viewController;
         
         [_touchView addSubview:_contentView];
 
@@ -175,9 +166,10 @@
 }
 
 - (void)setClosesOnTapOff:(BOOL)closesOnTapOff {
+    __weak FPPopoverController* weakSelf = self;
     if (closesOnTapOff) {
         [_touchView setTouchedOutsideBlock:^{
-            [self dismissPopoverAnimated:YES];
+            [weakSelf dismissPopoverAnimated:YES];
         }];
     } else {
         if (_contentView.style.hasTapOffNoCloseAnimation) {
@@ -189,9 +181,10 @@
 }
 
 - (void)setClosesOnTapOn:(BOOL)closesOnTapOn {
+    __weak FPPopoverController* weakSelf = self;
     if (closesOnTapOn) {
         [_touchView setTouchedInsideBlock:^{
-            [self dismissPopoverAnimated:YES];
+            [weakSelf dismissPopoverAnimated:YES];
         }];
     } else {
         [_touchView setTouchedInsideBlock:nil];
@@ -306,15 +299,12 @@
     NSArray *windows = [UIApplication sharedApplication].windows;
     if(windows.count > 0)
     {
-        [_window release];
-        [_parentView release];
         _parentView = nil;
-        _window = [[windows objectAtIndex:0] retain];
+        _window = [windows objectAtIndex:0];
         //keep the first subview
         if (_window.subviews.count > 0)
         {
-            [_parentView release]; 
-            _parentView = [[self containerViewFromWindow:_window] retain];
+            _parentView = [self containerViewFromWindow:_window];
             self.view.frame = CGRectMake(0, 0, [self parentWidth], [self parentHeight]);
             [self setupBackgroundDarkener];
             [self setupInFrontView];
@@ -343,7 +333,7 @@
 
 - (void)setupInFrontView {
     if (backgroundDarkener && _inFrontView && _inFrontView.superview != self.view) {
-        inFrontViewsParentView = [_inFrontView.superview retain];
+        inFrontViewsParentView = _inFrontView.superview;
         inFrontViewsFrame = _inFrontView.frame;
         CGRect newRect = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
         [_inFrontView removeFromSuperview];
@@ -368,7 +358,6 @@
         if (alpha > 0.003f) {
             if (backgroundDarkener) {
                 [backgroundDarkener removeFromSuperview];
-                [backgroundDarkener release];
             }
             CGRect darkenerFrame = _parentView.frame;
             UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -421,7 +410,7 @@
 
 -(void)presentPopoverFromView:(UIView*)fromView
 {
-    [_fromView release]; _fromView = [fromView retain];
+     _fromView = fromView;
     [self presentPopoverFromPoint:[self originFromView:_fromView]];
 }
 
@@ -437,12 +426,12 @@
     }
     self.delegate = nil;
     self.inFrontView = nil;
-    [inFrontViewsParentView release]; inFrontViewsParentView = nil;
-    [backgroundDarkener release]; backgroundDarkener = nil;
+     inFrontViewsParentView = nil;
+     backgroundDarkener = nil;
     [_touchView setTouchedOutsideBlock:nil];
     [_touchView setTouchedInsideBlock:nil];
-    [_window release]; _window=nil;
-    [_parentView release]; _parentView=nil;
+     _window=nil;
+     _parentView=nil;
     [self viewDidDisappear:NO];
 }
 

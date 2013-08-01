@@ -35,9 +35,6 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [_outsideBlock release];
-    [_insideBlock release];
-    [super dealloc];
 }
 
 - (void)keyboardShown:(NSNotification *)note {
@@ -54,13 +51,11 @@
 
 -(void)setTouchedOutsideBlock:(FPTouchedOutsideBlock)outsideBlock
 {
-    [_outsideBlock release];
     _outsideBlock = [outsideBlock copy];
 }
 
 -(void)setTouchedInsideBlock:(FPTouchedInsideBlock)insideBlock
 {
-    [_insideBlock release];
     _insideBlock = [insideBlock copy];    
 }
 

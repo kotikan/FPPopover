@@ -65,7 +65,7 @@ typedef enum {
 * into FPPopoverViewController::initWithViewController. Set to nil for no title; in this case the top bar will be the
 * height of the style borderWidth.
 */
-@property(nonatomic,retain) NSString *title;
+@property(nonatomic,strong) NSString *title;
 
 /**
 * The origin of this view relative to the content view.
@@ -80,7 +80,7 @@ typedef enum {
 /**
 * The appearance of the popover.
 */
-@property(nonatomic,retain) FPPopoverStyle *style;
+@property(nonatomic,strong) FPPopoverStyle *style;
 
 /**
 * Sets the arrow to be protruding from a specific edge.
