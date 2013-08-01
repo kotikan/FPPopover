@@ -300,7 +300,7 @@
     if(windows.count > 0)
     {
         _parentView = nil;
-        _window = [windows objectAtIndex:0];
+        _window = windows[0];
         //keep the first subview
         if (_window.subviews.count > 0)
         {
@@ -498,7 +498,7 @@
         _contentView.title = _viewController.title;
         [_contentView setNeedsDisplay];
     } else if (object == _viewController && [keyPath isEqualToString:@"contentSizeForViewInPopover"]) {
-        id newSizeValue = [change objectForKey:NSKeyValueChangeNewKey];
+        id newSizeValue = change[NSKeyValueChangeNewKey];
         CGSize newSize;
         
         [newSizeValue getValue:&newSize];
@@ -533,7 +533,7 @@
 
 - (CGRect)keyboardFrameInThisWindowFromNotification:(NSNotification *)note {
     NSDictionary *keyboardInfo = note.userInfo;
-    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    NSValue *endRectValue = keyboardInfo[UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardRect;
     
     [endRectValue getValue:(void *)&keyboardRect];

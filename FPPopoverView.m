@@ -215,7 +215,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     CGFloat widthForButtons = outerRect.size.width - (_style.borderWidth * 2.0f);
     CGFloat buttonWidths = [self bottomBarButtonsWidth];
     NSUInteger gaps = bottomBarButtons.count - 1;
-    UIButton *firstButton = [bottomBarButtons objectAtIndex:0];
+    UIButton *firstButton = bottomBarButtons[0];
     CGRect firstButtonFrame = firstButton.frame;
     CGFloat y = (outerRect.origin.y + outerRect.size.height) - (_style.borderWidth + firstButtonFrame.size.height);
     if (gaps <= 0) {

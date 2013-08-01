@@ -40,7 +40,7 @@
 - (void)keyboardShown:(NSNotification *)note {
     keyboardVisible = YES;
     NSDictionary *keyboardInfo = note.userInfo;
-    NSValue *endRectValue = [keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    NSValue *endRectValue = keyboardInfo[UIKeyboardFrameEndUserInfoKey];
     
     [endRectValue getValue:(void *)&keyboardRect];
 }
