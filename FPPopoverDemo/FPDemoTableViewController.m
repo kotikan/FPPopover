@@ -13,7 +13,9 @@
 
 @end
 
-@implementation FPDemoTableViewController
+@implementation FPDemoTableViewController {
+    FPPopoverController *popover;
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -54,8 +56,7 @@
     //the controller we want to present as a popover
     DemoTableController *controller = [[DemoTableController alloc] initWithStyle:UITableViewStylePlain];
     
-    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:controller];
-    [controller release];
+    popover = [[FPPopoverController alloc] initWithViewController:controller];
     
     //popover.arrowDirection = FPPopoverArrowDirectionAny;
     popover.tint = FPPopoverDefaultTint;
@@ -68,7 +69,6 @@
     
     //sender is the UIButton view
     [popover presentPopoverFromView:sender]; 
-    [popover release];
 }
 
 
@@ -93,7 +93,6 @@
     if(cell == nil)
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        [cell autorelease];
     }
     
     //accessory view button

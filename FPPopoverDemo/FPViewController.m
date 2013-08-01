@@ -15,7 +15,9 @@
 
 @end
 
-@implementation FPViewController
+@implementation FPViewController {
+    FPPopoverController *popover;
+}
 
 - (void)viewDidLoad
 {
@@ -43,8 +45,7 @@
     //the controller we want to present as a popover
     DemoTableController *controller = [[DemoTableController alloc] initWithStyle:UITableViewStylePlain];
     
-    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:controller];
-    [controller release];
+    popover = [[FPPopoverController alloc] initWithViewController:controller];
     
     //popover.arrowDirection = FPPopoverArrowDirectionAny;
     popover.tint = FPPopoverDefaultTint;
@@ -61,7 +62,6 @@
     
     //sender is the UIButton view
     [popover presentPopoverFromView:sender]; 
-    [popover release];
 }
 
 
@@ -69,7 +69,6 @@
           shouldDismissVisiblePopover:(FPPopoverController*)visiblePopoverController
 {
     [visiblePopoverController dismissPopoverAnimated:YES];
-    [visiblePopoverController autorelease];
 }
 
 -(IBAction)topLeft:(id)sender
@@ -131,7 +130,6 @@
 {
     FPDemoTableViewController *controller = [[FPDemoTableViewController alloc] initWithStyle:UITableViewStylePlain];
     [self.navigationController pushViewController:controller animated:YES];
-    [controller release];
 }
 
 
