@@ -23,13 +23,26 @@
 		18D8FA3C155050FE005E2222 /* FPPopoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 186C43971538513B00502D64 /* FPPopoverView.m */; };
 		18D8FA3D155050FE005E2222 /* FPTouchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 186C43AB153CAD1000502D64 /* FPTouchView.m */; };
 		18D8FA3E15505102005E2222 /* FPPopoverController.h in Headers */ = {isa = PBXBuildFile; fileRef = 186C43941538513B00502D64 /* FPPopoverController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		18D8FA3F15505102005E2222 /* FPPopoverView.h in Headers */ = {isa = PBXBuildFile; fileRef = 186C43961538513B00502D64 /* FPPopoverView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		18D8FA4015505102005E2222 /* FPTouchView.h in Headers */ = {isa = PBXBuildFile; fileRef = 186C43AA153CAD1000502D64 /* FPTouchView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18D8FA3F15505102005E2222 /* FPPopoverView.h in Headers */ = {isa = PBXBuildFile; fileRef = 186C43961538513B00502D64 /* FPPopoverView.h */; settings = {ATTRIBUTES = (); }; };
+		18D8FA4015505102005E2222 /* FPTouchView.h in Headers */ = {isa = PBXBuildFile; fileRef = 186C43AA153CAD1000502D64 /* FPTouchView.h */; settings = {ATTRIBUTES = (); }; };
 		18D8FA4315505122005E2222 /* libfppopover.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18D8FA30155050F0005E2222 /* libfppopover.a */; };
 		18D8FA45155051BA005E2222 /* background_iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 18D8FA44155051BA005E2222 /* background_iPad.png */; };
 		18EF6DEB154ED27D005AB1DD /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 18EF6DE9154ED27D005AB1DD /* background.png */; };
 		18EF6DEC154ED27D005AB1DD /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18EF6DEA154ED27D005AB1DD /* background@2x.png */; };
 		18F357271584E6E700AD4F07 /* FPDemoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F357261584E6E700AD4F07 /* FPDemoTableViewController.m */; };
+		C5E5505017AA70E600C4F3A9 /* FPPopoverBlackStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504417AA70E600C4F3A9 /* FPPopoverBlackStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505117AA70E600C4F3A9 /* FPPopoverBlackStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504517AA70E600C4F3A9 /* FPPopoverBlackStyle.m */; };
+		C5E5505217AA70E600C4F3A9 /* FPPopoverGreenStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504617AA70E600C4F3A9 /* FPPopoverGreenStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505317AA70E600C4F3A9 /* FPPopoverGreenStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504717AA70E600C4F3A9 /* FPPopoverGreenStyle.m */; };
+		C5E5505417AA70E600C4F3A9 /* FPPopoverLightGrayStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504817AA70E600C4F3A9 /* FPPopoverLightGrayStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505517AA70E600C4F3A9 /* FPPopoverLightGrayStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504917AA70E600C4F3A9 /* FPPopoverLightGrayStyle.m */; };
+		C5E5505617AA70E600C4F3A9 /* FPPopoverRedStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504A17AA70E600C4F3A9 /* FPPopoverRedStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505717AA70E600C4F3A9 /* FPPopoverRedStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504B17AA70E600C4F3A9 /* FPPopoverRedStyle.m */; };
+		C5E5505817AA70E600C4F3A9 /* FPPopoverStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504C17AA70E600C4F3A9 /* FPPopoverStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505917AA70E600C4F3A9 /* FPPopoverStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504D17AA70E600C4F3A9 /* FPPopoverStyle.m */; };
+		C5E5505A17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504E17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5E5505B17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E5504F17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.m */; };
+		C5E5505C17AA70EE00C4F3A9 /* FPPopoverAccessoriesProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C5E5504317AA70CC00C4F3A9 /* FPPopoverAccessoriesProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +87,19 @@
 		18EF6DEA154ED27D005AB1DD /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background@2x.png"; sourceTree = "<group>"; };
 		18F357251584E6E700AD4F07 /* FPDemoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPDemoTableViewController.h; sourceTree = "<group>"; };
 		18F357261584E6E700AD4F07 /* FPDemoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPDemoTableViewController.m; sourceTree = "<group>"; };
+		C5E5504317AA70CC00C4F3A9 /* FPPopoverAccessoriesProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverAccessoriesProtocol.h; sourceTree = "<group>"; };
+		C5E5504417AA70E600C4F3A9 /* FPPopoverBlackStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverBlackStyle.h; sourceTree = "<group>"; };
+		C5E5504517AA70E600C4F3A9 /* FPPopoverBlackStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverBlackStyle.m; sourceTree = "<group>"; };
+		C5E5504617AA70E600C4F3A9 /* FPPopoverGreenStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverGreenStyle.h; sourceTree = "<group>"; };
+		C5E5504717AA70E600C4F3A9 /* FPPopoverGreenStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverGreenStyle.m; sourceTree = "<group>"; };
+		C5E5504817AA70E600C4F3A9 /* FPPopoverLightGrayStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverLightGrayStyle.h; sourceTree = "<group>"; };
+		C5E5504917AA70E600C4F3A9 /* FPPopoverLightGrayStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverLightGrayStyle.m; sourceTree = "<group>"; };
+		C5E5504A17AA70E600C4F3A9 /* FPPopoverRedStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverRedStyle.h; sourceTree = "<group>"; };
+		C5E5504B17AA70E600C4F3A9 /* FPPopoverRedStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverRedStyle.m; sourceTree = "<group>"; };
+		C5E5504C17AA70E600C4F3A9 /* FPPopoverStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverStyle.h; sourceTree = "<group>"; };
+		C5E5504D17AA70E600C4F3A9 /* FPPopoverStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverStyle.m; sourceTree = "<group>"; };
+		C5E5504E17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+FPPopoverAccessories.h"; sourceTree = "<group>"; };
+		C5E5504F17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+FPPopoverAccessories.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +190,19 @@
 		186C43931538512A00502D64 /* FPPopover */ = {
 			isa = PBXGroup;
 			children = (
+				C5E5504417AA70E600C4F3A9 /* FPPopoverBlackStyle.h */,
+				C5E5504517AA70E600C4F3A9 /* FPPopoverBlackStyle.m */,
+				C5E5504617AA70E600C4F3A9 /* FPPopoverGreenStyle.h */,
+				C5E5504717AA70E600C4F3A9 /* FPPopoverGreenStyle.m */,
+				C5E5504817AA70E600C4F3A9 /* FPPopoverLightGrayStyle.h */,
+				C5E5504917AA70E600C4F3A9 /* FPPopoverLightGrayStyle.m */,
+				C5E5504A17AA70E600C4F3A9 /* FPPopoverRedStyle.h */,
+				C5E5504B17AA70E600C4F3A9 /* FPPopoverRedStyle.m */,
+				C5E5504C17AA70E600C4F3A9 /* FPPopoverStyle.h */,
+				C5E5504D17AA70E600C4F3A9 /* FPPopoverStyle.m */,
+				C5E5504E17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.h */,
+				C5E5504F17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.m */,
+				C5E5504317AA70CC00C4F3A9 /* FPPopoverAccessoriesProtocol.h */,
 				186C43941538513B00502D64 /* FPPopoverController.h */,
 				186C43951538513B00502D64 /* FPPopoverController.m */,
 				186C43961538513B00502D64 /* FPPopoverView.h */,
@@ -218,6 +257,13 @@
 				18D8FA3E15505102005E2222 /* FPPopoverController.h in Headers */,
 				18D8FA3F15505102005E2222 /* FPPopoverView.h in Headers */,
 				18D8FA4015505102005E2222 /* FPTouchView.h in Headers */,
+				C5E5505017AA70E600C4F3A9 /* FPPopoverBlackStyle.h in Headers */,
+				C5E5505217AA70E600C4F3A9 /* FPPopoverGreenStyle.h in Headers */,
+				C5E5505417AA70E600C4F3A9 /* FPPopoverLightGrayStyle.h in Headers */,
+				C5E5505617AA70E600C4F3A9 /* FPPopoverRedStyle.h in Headers */,
+				C5E5505817AA70E600C4F3A9 /* FPPopoverStyle.h in Headers */,
+				C5E5505A17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.h in Headers */,
+				C5E5505C17AA70EE00C4F3A9 /* FPPopoverAccessoriesProtocol.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +370,12 @@
 				18D8FA3B155050FE005E2222 /* FPPopoverController.m in Sources */,
 				18D8FA3C155050FE005E2222 /* FPPopoverView.m in Sources */,
 				18D8FA3D155050FE005E2222 /* FPTouchView.m in Sources */,
+				C5E5505117AA70E600C4F3A9 /* FPPopoverBlackStyle.m in Sources */,
+				C5E5505317AA70E600C4F3A9 /* FPPopoverGreenStyle.m in Sources */,
+				C5E5505517AA70E600C4F3A9 /* FPPopoverLightGrayStyle.m in Sources */,
+				C5E5505717AA70E600C4F3A9 /* FPPopoverRedStyle.m in Sources */,
+				C5E5505917AA70E600C4F3A9 /* FPPopoverStyle.m in Sources */,
+				C5E5505B17AA70E600C4F3A9 /* UINavigationController+FPPopoverAccessories.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
