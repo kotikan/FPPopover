@@ -101,6 +101,7 @@
 /**
  * @brief A view to keep in front of the background view but behind the popover
  */
+@property (nonatomic, strong) UIView *inFrontReferenceView;
 @property (nonatomic, strong) UIView *inFrontView;
 
 @property (nonatomic, readonly) BOOL popoverVisible;

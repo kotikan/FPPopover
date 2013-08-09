@@ -50,7 +50,7 @@
 @synthesize arrowDirection = _arrowDirection;
 @synthesize tint = _tint;
 @synthesize backgroundDarkenerColor = _backgroundDarkenerColor;
-@synthesize inFrontView = _inFrontView;
+@synthesize inFrontReferenceView = _inFrontReferenceView;
 @synthesize popoverVisible = _popoverVisible;
 
 -(void)addObservers
@@ -306,10 +306,11 @@
         {
             _parentView = [self containerViewFromWindow:_window];
             self.view.frame = CGRectMake(0, 0, [self parentWidth], [self parentHeight]);
+            [self createInFrontView];
             [self setupBackgroundDarkener];
-            [self setupInFrontView];
             [_parentView addSubview:self.view];
             [self.view bringSubviewToFront:_touchView];
+            [self.view bringSubviewToFront:_inFrontView];
         }
     } else {
         [self dismissPopoverAnimated:NO];
@@ -331,25 +332,30 @@
     }];
 }
 
-- (void)setupInFrontView {
-    if (backgroundDarkener && _inFrontView && _inFrontView.superview != self.view) {
-        inFrontViewsParentView = _inFrontView.superview;
-        inFrontViewsFrame = _inFrontView.frame;
-        CGRect newRect = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
-        [_inFrontView removeFromSuperview];
-        _inFrontView.frame = newRect;
-        [self.view addSubview:_inFrontView];
+- (UIImage *)imageFromView:(UIView *)view {
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return img;
+}
+
+- (void)createInFrontView {
+    if (_inFrontReferenceView && _inFrontReferenceView.superview != self.view) {
+        UIImage *imageOfView = [self imageFromView:_inFrontReferenceView];
+        UIImageView *displayInFrontView = [[UIImageView alloc] initWithImage:imageOfView];
+        inFrontViewsParentView = _inFrontReferenceView.superview;
+        inFrontViewsFrame = _inFrontReferenceView.frame;
+        CGRect frame = [_parentView convertRect:inFrontViewsFrame fromView:inFrontViewsParentView];
+        displayInFrontView.frame = frame;
+        [self.view addSubview:displayInFrontView];
+        self.inFrontView = displayInFrontView;
     }
 }
 
-- (void)revertInFrontView {
-    if (_inFrontView && inFrontViewsParentView && _inFrontView.superview == self.view) {
-        [_inFrontView removeFromSuperview];
-        _inFrontView.frame = inFrontViewsFrame;
-        if (inFrontViewsParentView.superview) {
-            [inFrontViewsParentView addSubview:_inFrontView];
-        }
-    }
+- (void)destroyInFrontView {
+    [self.inFrontView removeFromSuperview];
+    self.inFrontView = nil;
 }
 
 - (void)setupBackgroundDarkener {
@@ -419,13 +425,13 @@
     [self viewWillDisappear:NO];
     [self.view removeFromSuperview];
     [backgroundDarkener removeFromSuperview];
-    [self revertInFrontView];
+    [self destroyInFrontView];
     if([self.delegate respondsToSelector:@selector(popoverControllerDidDismissPopover:)])
     {
         [self.delegate popoverControllerDidDismissPopover:self];
     }
     self.delegate = nil;
-    self.inFrontView = nil;
+    self.inFrontReferenceView = nil;
      inFrontViewsParentView = nil;
      backgroundDarkener = nil;
     [_touchView setTouchedOutsideBlock:nil];
