@@ -22,14 +22,24 @@
  * A button that will be placed at the left side of the top bar of the popover.
  */
 - (UIButton *)leftTopBarButton {
-    return (UIButton*)(self.topViewController.navigationItem.leftBarButtonItem.customView);
+    if ([self.topViewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)] &&
+        [self.topViewController respondsToSelector:@selector(leftTopBarButton)]) {
+        return [(UIViewController<FPPopoverAccessoriesProtocol> *)self.topViewController leftTopBarButton];
+    } else {
+        return (UIButton*)(self.topViewController.navigationItem.leftBarButtonItem.customView);
+    }
 }
 
 /**
  * A button that will be placed at the right side of the top bar of the popover.
  */
 - (UIButton *)rightTopBarButton {
-    return (UIButton*)(self.topViewController.navigationItem.rightBarButtonItem.customView);
+    if ([self.topViewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)] &&
+        [self.topViewController respondsToSelector:@selector(rightTopBarButton)]) {
+        return [(UIViewController<FPPopoverAccessoriesProtocol> *)self.topViewController rightTopBarButton];
+    } else {
+        return (UIButton*)(self.topViewController.navigationItem.rightBarButtonItem.customView);
+    }
 }
 
 /**
