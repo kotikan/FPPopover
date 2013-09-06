@@ -164,7 +164,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         return;
     }
     [self addSubview:leftButton];
-    [self updateLeftButtonFrame];
+    [self updateLeftButtonCenter];
 }
 
 - (void)setRightButton:(UIButton*)button {
@@ -176,7 +176,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         return;
     }
     [self addSubview:rightButton];
-    [self updateRightButtonFrame];
+    [self updateRightButtonCenter];
 }
 
 - (void)setTopCentreView:(UIView*)view {
@@ -245,19 +245,6 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     return width;
 }
 
-- (void)updateRightButtonFrame {
-    if (!rightButton) {
-        return;
-    }
-    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
-    CGRect rightButtonFrame = CGRectMake(outerRect.origin.x + outerRect.size.width - (rightButton.frame.size.width + _style.borderWidth),
-                                         outerRect.origin.y + _style.borderWidth,
-                                         rightButton.frame.size.width,
-                                         rightButton.frame.size.height);
-    
-    rightButton.frame = CGRectIntegral(rightButtonFrame);
-}
-
 - (void)updateTopCentreViewFrame {
     if (!topCentreView) {
         return;
@@ -271,17 +258,26 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     topCentreView.frame = CGRectIntegral(topCentreFrame);
 }
 
-- (void)updateLeftButtonFrame {
+- (void)updateLeftButtonCenter {
     if (!leftButton) {
         return;
     }
-    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
-    CGRect leftButtonFrame = CGRectMake(outerRect.origin.x + _style.borderWidth,
-                                        outerRect.origin.y + _style.borderWidth,
-                                        leftButton.frame.size.width,
-                                        leftButton.frame.size.height);
     
-    leftButton.frame = CGRectIntegral(leftButtonFrame);
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGFloat x = outerRect.origin.x + (leftButton.frame.size.width/2) + _style.borderWidth;
+    CGFloat y = outerRect.origin.y + (_style.topBarHeight/2);
+    leftButton.center = CGPointMake(x, y);
+}
+
+- (void)updateRightButtonCenter {
+    if (!rightButton) {
+        return;
+    }
+    
+    CGRect outerRect = [self outerRectForBorderWidth:1.0f];
+    CGFloat x = CGRectGetMaxX(outerRect) - (rightButton.frame.size.width/2) - _style.borderWidth;
+    CGFloat y = outerRect.origin.y + (_style.topBarHeight/2) ;
+    rightButton.center = CGPointMake(x, y);
 }
 
 #pragma mark drawing
@@ -647,8 +643,8 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     }
     _contentView.frame = contentRect;
     [self updateContentStretch];
-    [self updateLeftButtonFrame];
-    [self updateRightButtonFrame];
+    [self updateLeftButtonCenter];
+    [self updateRightButtonCenter];
     [self updateTopCentreViewFrame];
     [self updateBottomBarButtonFrames];
     [self updateTitleLabel];
