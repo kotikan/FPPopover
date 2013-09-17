@@ -64,7 +64,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.textAlignment = UITextAlignmentCenter;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
 
         [self addSubview:_titleLabel];
         
@@ -710,7 +710,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
                 minFontSize:8.0f
              actualFontSize:&adjustedFontSize
                    forWidth:widthAvailableForTitle
-              lineBreakMode:UILineBreakModeTailTruncation];
+              lineBreakMode:NSLineBreakByTruncatingTail];
         _titleLabel.font = [_titleLabel.font fontWithSize:adjustedFontSize];
         _titleLabel.frame = titleFrame;
     }
