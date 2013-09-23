@@ -129,6 +129,9 @@
 /** @brief Dismiss the popover **/
 -(void)dismissPopoverAnimated:(BOOL)animated;
 
+/** @brief Completion handler run at the end of the animation if animation is true, otherwise at the end of the method.**/
+-(void)dismissPopoverAnimated:(BOOL)animated completion:(void (^)(void))completion;
+
 /**
  * The view-controller that this popover controller was created with.
  */

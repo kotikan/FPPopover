@@ -441,7 +441,11 @@
     [self viewDidDisappear:NO];
 }
 
--(void)dismissPopoverAnimated:(BOOL)animated
+-(void)dismissPopoverAnimated:(BOOL)animated {
+    [self dismissPopoverAnimated:animated completion:NULL];
+}
+
+-(void)dismissPopoverAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
     if (_delegate
         && [_delegate respondsToSelector:@selector(popoverControllerWillDismissPopover:animated:)]
@@ -460,13 +464,19 @@
         } completion:^(BOOL finished) {
             dismissalAnimationInProgress = NO;
             [self dismissPopover];
+            if (completion != NULL) {
+                completion();
+            }
         }];
     }
     else
     {
         [self dismissPopover];
+        if (completion != NULL) {
+            completion();
+        }
     }
-         
+    
 }
 
 -(void)setOrigin:(CGPoint)origin
