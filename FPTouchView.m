@@ -11,6 +11,7 @@
 @implementation FPTouchView {
     BOOL keyboardVisible;
     CGRect keyboardRect;
+    NSTimeInterval recentEventTimeStamp;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -63,8 +64,9 @@
 {
     UIView *subview = [super hitTest:point withEvent:event];
 
-    if(UIEventTypeTouches == event.type)
+    if(UIEventTypeTouches == event.type && event.timestamp != recentEventTimeStamp)
     {
+        recentEventTimeStamp = event.timestamp;
         BOOL touchedInside = subview != self;
         if(!touchedInside)
         {
