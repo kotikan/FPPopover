@@ -169,7 +169,14 @@
     __weak FPPopoverController* weakSelf = self;
     if (closesOnTapOff) {
         [_touchView setTouchedOutsideBlock:^{
-            [weakSelf dismissPopoverAnimated:YES];
+            if (weakSelf.delegate
+                && [weakSelf.delegate respondsToSelector:@selector(popoverControllerShouldDismissPopover:)]) {
+                if ([weakSelf.delegate popoverControllerShouldDismissPopover:weakSelf]) {
+                    [weakSelf dismissPopoverAnimated:YES];
+                }
+            } else {
+                [weakSelf dismissPopoverAnimated:YES];
+            }
         }];
     } else {
         if (_contentView.style.hasTapOffNoCloseAnimation) {
@@ -452,6 +459,7 @@
         && [_delegate popoverControllerWillDismissPopover:self animated:animated] == NO) {
         return;
     }
+    
     if(animated)
     {
         if (dismissalAnimationInProgress) {

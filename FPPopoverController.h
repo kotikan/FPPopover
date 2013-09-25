@@ -24,6 +24,13 @@
 
 @optional
 
+/**
+ * Called when tapping outside of the popover if tapOutsideToClose is set to YES
+ *
+ * @param popoverController The popover that has closed.
+ */
+- (BOOL)popoverControllerShouldDismissPopover:(FPPopoverController *)popoverController;
+
 - (BOOL)popoverControllerWillDismissPopover:(FPPopoverController *)popoverController animated:(BOOL)animated;
 
 /**
