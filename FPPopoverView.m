@@ -265,7 +265,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     }
     
     CGRect outerRect = [self outerRectForBorderWidth:1.0f];
-    CGFloat x = outerRect.origin.x + (leftButton.frame.size.width/2) + _style.borderWidth;
+    CGFloat x = outerRect.origin.x + (leftButton.frame.size.width/2) + _style.borderWidth + _style.topBarButtonOuterPadding;
     CGFloat y = outerRect.origin.y + (_style.topBarHeight/2);
     leftButton.center = CGPointMake(x, y);
 }
@@ -276,7 +276,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
     }
     
     CGRect outerRect = [self outerRectForBorderWidth:1.0f];
-    CGFloat x = CGRectGetMaxX(outerRect) - (rightButton.frame.size.width/2) - _style.borderWidth;
+    CGFloat x = CGRectGetMaxX(outerRect) - (rightButton.frame.size.width/2) - _style.borderWidth - _style.topBarButtonOuterPadding;
     CGFloat y = outerRect.origin.y + (_style.topBarHeight/2) ;
     rightButton.center = CGPointMake(x, y);
 }

@@ -160,4 +160,9 @@
     return NO;
 }
 
+- (CGFloat)topBarButtonOuterPadding {
+    return 0;
+}
+
+
 @end

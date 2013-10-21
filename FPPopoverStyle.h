@@ -187,4 +187,6 @@
 
 - (BOOL)hasTapOffNoCloseAnimation;
 
+- (CGFloat)topBarButtonOuterPadding;
+
 @end
