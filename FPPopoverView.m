@@ -711,7 +711,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
              actualFontSize:&adjustedFontSize
                    forWidth:widthAvailableForTitle
               lineBreakMode:NSLineBreakByTruncatingTail];
-        _titleLabel.font = [_titleLabel.font fontWithSize:adjustedFontSize];
+        _titleLabel.font = [_style.titleFont fontWithSize:adjustedFontSize];
         _titleLabel.frame = titleFrame;
     }
 }
