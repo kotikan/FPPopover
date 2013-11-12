@@ -695,15 +695,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
                                            _style.topBarHeight - 2.0f * _style.borderWidth);
         }
         
-        CGFloat widthAvailableForTitle = titleFrame.size.width;
-        CGFloat widthReductionForButtons = 0.0f;
-        
-        if (leftButton || rightButton) {
-            widthReductionForButtons = MAX(leftButton.frame.size.width, rightButton.frame.size.width) + TitleHorizontalPadding;
-            widthReductionForButtons *= 2.0f;
-        }
-        widthAvailableForTitle -= widthReductionForButtons;
-        
+        CGFloat widthAvailableForTitle = [self availableTitleWidth:titleFrame];
         CGFloat adjustedFontSize;
         
         [title sizeWithFont:_style.titleFont
@@ -714,6 +706,19 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         _titleLabel.font = [_style.titleFont fontWithSize:adjustedFontSize];
         _titleLabel.frame = titleFrame;
     }
+}
+
+- (CGFloat)availableTitleWidth:(CGRect)titleFrame {
+    CGFloat widthAvailableForTitle = titleFrame.size.width;
+    CGFloat widthReductionForButtons = 0.0f;
+    
+    if (leftButton || rightButton) {
+        widthReductionForButtons = MAX(leftButton.frame.size.width, rightButton.frame.size.width)
+                                    + TitleHorizontalPadding + _style.topBarButtonOuterPadding;
+        widthReductionForButtons *= 2.0f;
+    }
+    
+    return (widthAvailableForTitle - widthReductionForButtons);
 }
 
 -(void)layoutSubviews {
