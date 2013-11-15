@@ -154,6 +154,30 @@
     }
 }
 
+- (void)enableAccessoryInteraction:(BOOL)enable {
+    UIViewController<FPPopoverAccessoriesProtocol> *accessoriesViewController = nil;
+    if ([_viewController conformsToProtocol:@protocol(FPPopoverAccessoriesProtocol)]) {
+        accessoriesViewController = (UIViewController<FPPopoverAccessoriesProtocol> *)_viewController;
+    }
+    
+    if (accessoriesViewController) {
+        if ([accessoriesViewController respondsToSelector:@selector(leftTopBarButton)]) {
+            [accessoriesViewController leftTopBarButton].userInteractionEnabled = enable;
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(rightTopBarButton)]) {
+            [accessoriesViewController rightTopBarButton].userInteractionEnabled = enable;
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(bottomBarButtons)]) {
+            for (UIButton *button in [accessoriesViewController bottomBarButtons]) {
+                button.userInteractionEnabled = enable;
+            }
+        }
+        if ([accessoriesViewController respondsToSelector:@selector(centreTopView)]) {
+            [accessoriesViewController centreTopView].userInteractionEnabled = enable;
+        }
+    }
+}
+
 -(void)setTint:(FPPopoverTint)tint
 {
     _contentView.tint = tint;
@@ -496,10 +520,15 @@
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [self updateAccessories];
+    [self enableAccessoryInteraction:NO];
     self.title = viewController.title;
     _contentView.title = viewController.title;
     [self setPopoverContentSize:viewController.contentSizeForViewInPopover];
     [_contentView setNeedsDisplay];
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [self enableAccessoryInteraction:YES];
 }
 
 #pragma mark observing
