@@ -731,124 +731,115 @@
 
 -(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v
 {
-    CGPoint p = [v.superview convertPoint:v.frame.origin toView:self.view];
+    const CGPoint origin = [v.superview convertPoint:v.frame.origin toView:self.view];
     
-    CGFloat ht = p.y; //available vertical space on top of the view
-    CGFloat hb = [self parentHeight] -  (p.y + v.frame.size.height); //on the bottom
-    CGFloat wl = p.x; //on the left
-    CGFloat wr = [self parentWidth] - (p.x + v.frame.size.width); //on the right
+    const CGFloat spaceAbove = origin.y; //available vertical space on top of the view
+    const CGFloat spaceBelow = [self parentHeight] -  (origin.y + v.frame.size.height); //on the bottom
+    const CGFloat spaceOnLeft = origin.x; //on the left
+    const CGFloat spaceOnRight = [self parentWidth] - (origin.x + v.frame.size.width); //on the right
         
-    CGFloat best_h = MAX(ht, hb); //much space down or up ?
-    CGFloat best_w = MAX(wl, wr);
+    const CGFloat maxVerticalSpace = MAX(spaceAbove, spaceBelow); //much space down or up ?
+    const CGFloat maxHorizontalSpace = MAX(spaceOnLeft, spaceOnRight);
     
-    CGRect r;
-    r.size = self.contentSize;
+    CGRect result;
+    result.size = self.contentSize;
 
     FPPopoverArrowDirection bestDirection;
     
     //if the user wants vertical arrow, check if the content will fit vertically 
     if(FPPopoverArrowDirectionIsVertical(self.arrowDirection) || 
-       (self.arrowDirection == FPPopoverArrowDirectionAny && best_h >= best_w))
+       (self.arrowDirection == FPPopoverArrowDirectionAny && maxVerticalSpace >= maxHorizontalSpace))
     {
-
         //ok, will be vertical
-        if(ht == best_h || self.arrowDirection == FPPopoverArrowDirectionDown)
+        if(spaceAbove == maxVerticalSpace || self.arrowDirection == FPPopoverArrowDirectionDown)
         {
             //on the top and arrow down
             bestDirection = FPPopoverArrowDirectionDown;
             
-            r.origin.x = p.x + v.frame.size.width/2.0 - r.size.width/2.0;
-            r.origin.y = p.y - r.size.height;
+            result.origin.x = origin.x + v.frame.size.width/2.0 - result.size.width/2.0;
+            result.origin.y = origin.y - result.size.height;
         }
         else
         {
             //on the bottom and arrow up
             bestDirection = FPPopoverArrowDirectionUp;
 
-            r.origin.x = p.x + v.frame.size.width/2.0 - r.size.width/2.0;
-            r.origin.y = p.y + v.frame.size.height;
+            result.origin.x = origin.x + v.frame.size.width/2.0 - result.size.width/2.0;
+            result.origin.y = origin.y + v.frame.size.height;
         }
-        
-
     }
-    
-    
     else 
     {
         //ok, will be horizontal 
-        if(wl == best_w && self.arrowDirection != FPPopoverArrowDirectionLeft)
+        if(spaceOnLeft == maxHorizontalSpace && self.arrowDirection != FPPopoverArrowDirectionLeft)
         {
             //on the left and arrow right
             bestDirection = FPPopoverArrowDirectionRight;
 
-            r.origin.x = p.x - r.size.width;
-            r.origin.y = p.y + v.frame.size.height/2.0 - r.size.height/2.0;
-
+            result.origin.x = origin.x - result.size.width;
+            result.origin.y = origin.y + v.frame.size.height/2.0 - result.size.height/2.0;
         }
         else
         {
             //on the right then arrow left
             bestDirection = FPPopoverArrowDirectionLeft;
 
-            r.origin.x = p.x + v.frame.size.width;
-            r.origin.y = p.y + v.frame.size.height/2.0 - r.size.height/2.0;
+            result.origin.x = origin.x + v.frame.size.width;
+            result.origin.y = origin.y + v.frame.size.height/2.0 - result.size.height/2.0;
         }
         
-        if(r.origin.y + r.size.height > [self parentHeight] && r.origin.y > 0)
+        if(result.origin.y + result.size.height > [self parentHeight] && result.origin.y > 0)
         {
-            r.origin.y = [self parentHeight] - r.size.height;
+            result.origin.y = [self parentHeight] - result.size.height;
         }
     }
     
-    
-    
     //need to moved left ? 
-    if(r.origin.x + r.size.width > [self parentWidth])
+    if(result.origin.x + result.size.width > [self parentWidth])
     {
-        r.origin.x = [self parentWidth] - r.size.width;
+        result.origin.x = [self parentWidth] - result.size.width;
     }
     
     //need to moved right ?
-    else if(r.origin.x < 0)
+    else if(result.origin.x < 0)
     {
-        r.origin.x = 0;
+        result.origin.x = 0;
     }
     
     if (maintainOrigin) {
-        r.origin = originToMaintain;
+        result.origin = originToMaintain;
     }
     
     //need to move up?
-    if(r.origin.y < 0)
+    if(result.origin.y < 0)
     {
-        r.origin.y = 0;
+        result.origin.y = 0;
     }
     
     //need to be resized horizontally ?
-    if(r.origin.x + r.size.width > [self parentWidth])
+    if(result.origin.x + result.size.width > [self parentWidth])
     {
-        r.size.width = [self parentWidth] - r.origin.x;
+        result.size.width = [self parentWidth] - result.origin.x;
     }
     
     //need to be resized vertically ?
-    if(r.origin.y + r.size.height > [self parentHeight])
+    if(result.origin.y + result.size.height > [self parentHeight])
     {
-        r.size.height = [self parentHeight] - r.origin.y;
+        result.size.height = [self parentHeight] - result.origin.y;
     }
-    
     
     if([[UIApplication sharedApplication] isStatusBarHidden] == NO)
     {
-        if(r.origin.y < 20) r.origin.y += 20;
+        if(result.origin.y < 20) result.origin.y += 20;
     }
 
     _contentView.arrowDirection = bestDirection;
-    _contentView.frame = CGRectIntegral(r);
+    _contentView.frame = CGRectIntegral(result);
 
-    self.origin = CGPointMake(p.x + v.frame.size.width/2.0, p.y + v.frame.size.height/2.0);
+    self.origin = CGPointMake(origin.x + v.frame.size.width/2.0, origin.y + v.frame.size.height/2.0);
     _contentView.relativeOrigin = [_parentView convertPoint:self.origin toView:_contentView];
 
-    return r;
+    return result;
 }
 
 
