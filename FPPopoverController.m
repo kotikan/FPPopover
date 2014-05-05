@@ -13,6 +13,8 @@
 #import "FPPopoverAccessoriesProtocol.h"
 #import "FPPopoverStyle.h"
 
+#define PopoverCenterMargin 5
+
 @interface FPPopoverController(Private)
 -(CGPoint)originFromView:(UIView*)fromView;
 
@@ -871,6 +873,18 @@
     return result;
 }
 
++ (CGRect)centerFrame:(CGRect)frame ifNearWidth:(CGFloat)width
+{
+    const CGFloat frameWidth = CGRectGetWidth(frame);
+    const CGFloat maxWidthBeforeCentering = width - (PopoverCenterMargin * 2);
+    if (frameWidth >= maxWidthBeforeCentering) {
+        const CGFloat x = (width - frameWidth) / 2;
+        return CGRectMake(x, frame.origin.y, frame.size.width, frame.size.height);
+    } else {
+        return frame;
+    }
+}
+
 -(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v
 {
     const CGPoint origin = [v.superview convertPoint:v.frame.origin toView:self.view];
@@ -893,7 +907,9 @@
 
     const CGRect idealPopoverFrame = CGRectMake(idealPopoverOrigin.x, idealPopoverOrigin.y, self.contentSize.width, self.contentSize.height);
     
-    const CGRect adjustedPopoverFrame = [FPPopoverController adjustFrame:idealPopoverFrame
+    const CGRect centeredFrame = [FPPopoverController centerFrame:idealPopoverFrame ifNearWidth:self.parentWidth];
+    
+    const CGRect adjustedPopoverFrame = [FPPopoverController adjustFrame:centeredFrame
                                                           toKeepInBounds:CGSizeMake(self.parentWidth, self.parentHeight)
                                                       withArrowDirection:bestDirection
                                                           maintainOrigin:maintainOrigin
