@@ -885,27 +885,27 @@
                                                                                        spaceBelow:spaceBelow
                                                                                       spaceOnLeft:spaceOnLeft
                                                                                      spaceOnRight:spaceOnRight];
-    
-    CGRect result;
-    result.size = self.contentSize;
-    result.origin = [FPPopoverController popoverOriginForDirection:bestDirection
-                                                            origin:origin
-                                                          viewSize:v.frame.size
-                                                       contentSize:result.size];
 
-    result = [FPPopoverController adjustFrame:result
-                               toKeepInBounds:CGSizeMake(self.parentWidth, self.parentHeight)
-                           withArrowDirection:bestDirection
-                               maintainOrigin:maintainOrigin
-                             originToMaintain:originToMaintain];
+    const CGPoint idealPopoverOrigin = [FPPopoverController popoverOriginForDirection:bestDirection
+                                                                               origin:origin
+                                                                             viewSize:v.frame.size
+                                                                          contentSize:self.contentSize];
+
+    const CGRect idealPopoverFrame = CGRectMake(idealPopoverOrigin.x, idealPopoverOrigin.y, self.contentSize.width, self.contentSize.height);
+    
+    const CGRect adjustedPopoverFrame = [FPPopoverController adjustFrame:idealPopoverFrame
+                                                          toKeepInBounds:CGSizeMake(self.parentWidth, self.parentHeight)
+                                                      withArrowDirection:bestDirection
+                                                          maintainOrigin:maintainOrigin
+                                                        originToMaintain:originToMaintain];
 
     _contentView.arrowDirection = bestDirection;
-    _contentView.frame = CGRectIntegral(result);
+    _contentView.frame = CGRectIntegral(adjustedPopoverFrame);
 
     self.origin = CGPointMake(origin.x + v.frame.size.width/2.0, origin.y + v.frame.size.height/2.0);
     _contentView.relativeOrigin = [_parentView convertPoint:self.origin toView:_contentView];
 
-    return result;
+    return adjustedPopoverFrame;
 }
 
 
