@@ -811,40 +811,25 @@
     return result;
 }
 
--(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v
++ (CGRect)adjustFrame:(CGRect)frame
+       toKeepInBounds:(CGSize)bounds
+   withArrowDirection:(FPPopoverArrowDirection)arrowDirection
+       maintainOrigin:(BOOL)maintainOrigin
+     originToMaintain:(CGPoint)originToMaintain
 {
-    const CGPoint origin = [v.superview convertPoint:v.frame.origin toView:self.view];
+    CGRect result = frame;
     
-    const CGFloat spaceAbove = origin.y; //available vertical space on top of the view
-    const CGFloat spaceBelow = [self parentHeight] -  (origin.y + v.frame.size.height); //on the bottom
-    const CGFloat spaceOnLeft = origin.x; //on the left
-    const CGFloat spaceOnRight = [self parentWidth] - (origin.x + v.frame.size.width); //on the right
-    
-    CGRect result;
-    result.size = self.contentSize;
-
-    const FPPopoverArrowDirection bestDirection = [FPPopoverController bestArrowDirectionWithHint:self.arrowDirection
-                                                                                       spaceAbove:spaceAbove
-                                                                                       spaceBelow:spaceBelow
-                                                                                      spaceOnLeft:spaceOnLeft
-                                                                                     spaceOnRight:spaceOnRight];
-    
-    result.origin = [FPPopoverController popoverOriginForDirection:bestDirection
-                                                            origin:origin
-                                                          viewSize:v.frame.size
-                                                       contentSize:result.size];
-
-    if (FPPopoverArrowDirectionIsHorizontal(bestDirection)) {
-        if(CGRectGetMaxY(result) > [self parentHeight] && result.origin.y > 0)
+    if (FPPopoverArrowDirectionIsHorizontal(arrowDirection)) {
+        if(CGRectGetMaxY(result) > bounds.height && result.origin.y > 0)
         {
-            result.origin.y = [self parentHeight] - result.size.height;
+            result.origin.y = bounds.height - result.size.height;
         }
     }
     
-    //need to moved left ? 
-    if(CGRectGetMaxX(result) > [self parentWidth])
+    //need to moved left ?
+    if(CGRectGetMaxX(result) > bounds.width)
     {
-        result.origin.x = [self parentWidth] - result.size.width;
+        result.origin.x = bounds.width - result.size.width;
     }
     
     //need to moved right ?
@@ -864,15 +849,15 @@
     }
     
     //need to be resized horizontally ?
-    if(CGRectGetMaxX(result) > [self parentWidth])
+    if(CGRectGetMaxX(result) > bounds.width)
     {
-        result.size.width = [self parentWidth] - result.origin.x;
+        result.size.width = bounds.width - result.origin.x;
     }
     
     //need to be resized vertically ?
-    if(CGRectGetMaxY(result) > [self parentHeight])
+    if(CGRectGetMaxY(result) > bounds.height)
     {
-        result.size.height = [self parentHeight] - result.origin.y;
+        result.size.height = bounds.height - result.origin.y;
     }
     
     if([[UIApplication sharedApplication] isStatusBarHidden] == NO)
@@ -881,6 +866,37 @@
             result.origin.y += 20;
         }
     }
+    
+    return result;
+}
+
+-(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v
+{
+    const CGPoint origin = [v.superview convertPoint:v.frame.origin toView:self.view];
+    
+    const CGFloat spaceAbove = origin.y; //available vertical space on top of the view
+    const CGFloat spaceBelow = [self parentHeight] -  (origin.y + v.frame.size.height); //on the bottom
+    const CGFloat spaceOnLeft = origin.x; //on the left
+    const CGFloat spaceOnRight = [self parentWidth] - (origin.x + v.frame.size.width); //on the right
+
+    const FPPopoverArrowDirection bestDirection = [FPPopoverController bestArrowDirectionWithHint:self.arrowDirection
+                                                                                       spaceAbove:spaceAbove
+                                                                                       spaceBelow:spaceBelow
+                                                                                      spaceOnLeft:spaceOnLeft
+                                                                                     spaceOnRight:spaceOnRight];
+    
+    CGRect result;
+    result.size = self.contentSize;
+    result.origin = [FPPopoverController popoverOriginForDirection:bestDirection
+                                                            origin:origin
+                                                          viewSize:v.frame.size
+                                                       contentSize:result.size];
+
+    result = [FPPopoverController adjustFrame:result
+                               toKeepInBounds:CGSizeMake(self.parentWidth, self.parentHeight)
+                           withArrowDirection:bestDirection
+                               maintainOrigin:maintainOrigin
+                             originToMaintain:originToMaintain];
 
     _contentView.arrowDirection = bestDirection;
     _contentView.frame = CGRectIntegral(result);
