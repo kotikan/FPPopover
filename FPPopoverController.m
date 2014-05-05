@@ -806,6 +806,7 @@
             //on the right then arrow left
             result.x = origin.x + viewSize.width;
             result.y = origin.y + viewSize.height/2.0 - contentSize.height/2.0;
+            break;
     }
     
     return result;
