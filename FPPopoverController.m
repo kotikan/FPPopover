@@ -399,10 +399,16 @@
                 [backgroundDarkener removeFromSuperview];
             }
             CGRect darkenerFrame = _parentView.frame;
-            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-            if (UIInterfaceOrientationIsLandscape(orientation)) {
-                darkenerFrame.size = CGSizeMake(darkenerFrame.size.height, darkenerFrame.size.width);
+            
+            // iOS 8 fixes this behaviour.
+            NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
+            if ([systemVersion compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending) {
+                UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+                if (UIInterfaceOrientationIsLandscape(orientation)) {
+                    darkenerFrame.size = CGSizeMake(darkenerFrame.size.height, darkenerFrame.size.width);
+                }
             }
+            
             darkenerFrame.origin = CGPointZero;
             backgroundDarkener = [[UIView alloc] initWithFrame:darkenerFrame];
             backgroundDarkener.backgroundColor = _backgroundDarkenerColor;
