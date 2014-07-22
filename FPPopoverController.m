@@ -338,6 +338,9 @@
         if (_window.subviews.count > 0)
         {
             _parentView = [self containerViewFromWindow:_window];
+            if (_parentView == nil) {
+                _parentView = _window;
+            }
             self.view.frame = CGRectMake(0, 0, [self parentWidth], [self parentHeight]);
             [self createInFrontView];
             [self setupBackgroundDarkener];
