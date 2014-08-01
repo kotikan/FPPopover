@@ -23,6 +23,60 @@
 
 float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
 
+@interface NSString (MinFontSizing)
+- (CGSize)fractionalSizeWithFont:(UIFont *)font
+                     minFontSize:(CGFloat)minFontSize
+                  actualFontSize:(CGFloat *)actualFontSize
+                        forWidth:(CGFloat)constrainedWidth
+                   lineBreakMode:(NSLineBreakMode)lineBreakMode;
+@end
+
+@implementation NSString (MinFontSizing)
+
+- (CGSize)fractionalSizeWithFont:(UIFont*)font
+               constrainedToSize:(CGSize)size
+                   lineBreakMode:(NSLineBreakMode)lineBreakMode {
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = lineBreakMode;
+    NSDictionary * attributes = @{NSFontAttributeName: font,
+                                  NSParagraphStyleAttributeName: paragraphStyle};
+    CGRect textRect = [self boundingRectWithSize:size
+                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:attributes
+                                         context:nil];
+    return textRect.size;
+}
+
+- (CGSize)fractionalSizeWithFont:(UIFont *)font
+                     minFontSize:(CGFloat)minFontSize
+                  actualFontSize:(CGFloat *)actualFontSize
+                        forWidth:(CGFloat)constrainedWidth
+                   lineBreakMode:(NSLineBreakMode)lineBreakMode {
+    CGFloat fontSize = font.pointSize;
+    CGSize size = [self sizeWithAttributes:@{NSFontAttributeName: font}];
+    CGFloat initialHeight = size.height;
+    
+    while (size.width > constrainedWidth && fontSize > minFontSize) {
+        fontSize -= 0.5f;
+        UIFont *smallerFont = [UIFont fontWithName:font.fontName size:fontSize];
+        size = [self sizeWithAttributes:@{NSFontAttributeName: smallerFont}];
+    }
+    if (fontSize <= minFontSize) {
+        fontSize = minFontSize;
+        UIFont *smallerFont = [UIFont fontWithName:font.fontName size:fontSize];
+        CGSize maxSize = CGSizeMake(constrainedWidth, initialHeight);
+        size = [self fractionalSizeWithFont:smallerFont
+                          constrainedToSize:maxSize
+                              lineBreakMode:lineBreakMode];
+    }
+    *actualFontSize = fontSize;
+    size.height = initialHeight;
+    
+    return size;
+}
+
+@end
+
 @interface FPPopoverView(Private)
 -(void)setupViews;
 @end
@@ -698,11 +752,11 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         CGFloat widthAvailableForTitle = [self availableTitleWidth:titleFrame];
         CGFloat adjustedFontSize;
         
-        [title sizeWithFont:_style.titleFont
-                minFontSize:8.0f
-             actualFontSize:&adjustedFontSize
-                   forWidth:widthAvailableForTitle
-              lineBreakMode:NSLineBreakByTruncatingTail];
+        [title fractionalSizeWithFont:_style.titleFont
+                          minFontSize:8.0f
+                       actualFontSize:&adjustedFontSize
+                             forWidth:widthAvailableForTitle
+                        lineBreakMode:NSLineBreakByTruncatingTail];
         _titleLabel.font = [_style.titleFont fontWithSize:adjustedFontSize];
         _titleLabel.frame = titleFrame;
     }
