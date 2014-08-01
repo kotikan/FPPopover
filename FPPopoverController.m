@@ -73,7 +73,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_viewController removeObserver:self forKeyPath:@"title"];
-    [_viewController removeObserver:self forKeyPath:@"contentSizeForViewInPopover"];
+    [_viewController removeObserver:self forKeyPath:@"preferredContentSize"];
 }
 
 
@@ -98,7 +98,7 @@
         [self.view addSubview:_touchView];
         self.closesOnTapOff = YES;
         self.closesOnTapOn = NO;
-        self.contentSize = viewController.contentSizeForViewInPopover;
+        self.contentSize = viewController.preferredContentSize;
         contentSizeWithoutKeyboard = self.contentSize;
         keyboardVisible = NO;
 
@@ -129,7 +129,7 @@
         _contentView.clipsToBounds = NO;
         
         [_viewController addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
-        [_viewController addObserver:self forKeyPath:@"contentSizeForViewInPopover" options:NSKeyValueObservingOptionNew context:nil];
+        [_viewController addObserver:self forKeyPath:@"preferredContentSize" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -534,7 +534,7 @@
     [self enableAccessoryInteraction:NO];
     self.title = viewController.title;
     _contentView.title = viewController.title;
-    [self setPopoverContentSize:viewController.contentSizeForViewInPopover];
+    [self setPopoverContentSize:viewController.preferredContentSize];
     [_contentView setNeedsDisplay];
 }
 
@@ -561,7 +561,7 @@
     if(object == _viewController && [keyPath isEqualToString:@"title"]) {
         _contentView.title = _viewController.title;
         [_contentView setNeedsDisplay];
-    } else if (object == _viewController && [keyPath isEqualToString:@"contentSizeForViewInPopover"]) {
+    } else if (object == _viewController && [keyPath isEqualToString:@"preferredContentSize"]) {
         id newSizeValue = change[NSKeyValueChangeNewKey];
         CGSize newSize;
         
@@ -635,11 +635,11 @@
 - (void)setContentSizeMaintainingOrigin:(CGSize)newContentSize {
     if ([_viewController isKindOfClass:[UINavigationController class]]
         && [(UINavigationController*)_viewController topViewController]) {
-        [(UINavigationController*)_viewController topViewController].contentSizeForViewInPopover = newContentSize;
+        [(UINavigationController*)_viewController topViewController].preferredContentSize = newContentSize;
     }
     maintainOrigin = YES;
     originToMaintain = _contentView.frame.origin;
-    _viewController.contentSizeForViewInPopover = newContentSize;
+    _viewController.preferredContentSize = newContentSize;
     maintainOrigin = NO;
 }
 
