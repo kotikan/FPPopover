@@ -16,20 +16,6 @@
 #define PopoverCenterMargin 5
 
 @interface FPPopoverController(Private)
--(CGPoint)originFromView:(UIView*)fromView;
-
-
--(CGFloat)parentWidth;
--(CGFloat)parentHeight;
-
-#pragma mark Space management
-/* This methods help the controller to found a proper way to display the view.
- * If the "from point" will be on the left, the arrow will be on the left and the 
- * view will be move on the right of the from point.
- */
--(CGRect)bestViewFrameForFromPoint:(CGPoint)point;
-
--(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v;
 
 @property (nonatomic, readwrite) BOOL popoverVisible;
 
@@ -255,7 +241,7 @@
     _touchView.frame = self.view.bounds;
     
     //view position, size and best arrow direction
-    [self bestArrowDirectionAndFrameFromView:_fromView];
+    [self bestArrowDirectionAndFrame];
 
     [_contentView setNeedsDisplay];
     [_touchView setNeedsDisplay];
@@ -323,7 +309,7 @@
     return nil;
 }
 
--(void)presentPopoverFromPoint:(CGPoint)fromPoint
+-(void)presentPopoverUsingPresetRectFromPoint:(CGPoint)fromPoint
 {
     self.origin = fromPoint;
     _contentView.relativeOrigin = [_parentView convertPoint:fromPoint toView:_contentView];
@@ -424,42 +410,59 @@
     }
 }
 
--(CGPoint)originFromView:(UIView*)fromView
+-(CGPoint)originFromRect:(CGRect)rect
 {
     CGPoint p;
     if([_contentView arrowDirection] == FPPopoverArrowDirectionUp)
     {
-        p.x = fromView.frame.origin.x + fromView.frame.size.width/2.0;
-        p.y = fromView.frame.origin.y + fromView.frame.size.height;
+        p.x = rect.origin.x + rect.size.width/2.0;
+        p.y = rect.origin.y + rect.size.height;
     }
     else if([_contentView arrowDirection] == FPPopoverArrowDirectionDown)
     {
-        p.x = fromView.frame.origin.x + fromView.frame.size.width/2.0;
-        p.y = fromView.frame.origin.y;        
+        p.x = rect.origin.x + rect.size.width/2.0;
+        p.y = rect.origin.y;
     }
     else if([_contentView arrowDirection] == FPPopoverArrowDirectionLeft)
     {
-        p.x = fromView.frame.origin.x + fromView.frame.size.width;
-        p.y = fromView.frame.origin.y + fromView.frame.size.height/2.0;
+        p.x = rect.origin.x + rect.size.width;
+        p.y = rect.origin.y + rect.size.height/2.0;
     }
     else if([_contentView arrowDirection] == FPPopoverArrowDirectionRight)
     {
-        p.x = fromView.frame.origin.x;
-        p.y = fromView.frame.origin.y + fromView.frame.size.height/2.0;
+        p.x = rect.origin.x;
+        p.y = rect.origin.y + rect.size.height/2.0;
     }
     else
     {
-        p.x = fromView.frame.origin.x;
-        p.y = fromView.frame.origin.y;
+        p.x = rect.origin.x;
+        p.y = rect.origin.y;
     }
 
     return p;
 }
 
+-(void)presentPopoverFromRect:(CGRect)rect
+{
+    _fromRect = rect;
+    _fromView = nil;
+    [self presentPopover];
+}
+
 -(void)presentPopoverFromView:(UIView*)fromView
 {
-     _fromView = fromView;
-    [self presentPopoverFromPoint:[self originFromView:_fromView]];
+    _fromView = fromView;
+    [self presentPopover];
+}
+
+- (void)presentPopoverFromPoint:(CGPoint)fromPoint {
+    _fromRect = (CGRect){fromPoint, CGSizeZero};
+    _fromView = nil;
+    [self presentPopover];
+}
+
+- (void)presentPopover {
+    [self presentPopoverUsingPresetRectFromPoint:[self originFromRect:_fromRect]];
 }
 
 -(void)dismissPopover
@@ -894,14 +897,18 @@
     }
 }
 
--(CGRect)bestArrowDirectionAndFrameFromView:(UIView*)v
-{
-    const CGPoint origin = [v.superview convertPoint:v.frame.origin toView:self.view];
-    
+- (void)bestArrowDirectionAndFrame {
+    CGRect frame = _fromRect;
+    CGPoint origin = _fromRect.origin;
+    if (_fromView) {
+        frame = _fromView.frame;
+        origin = [_fromView.superview convertPoint:_fromView.frame.origin toView:self.view];
+    }
+
     const CGFloat spaceAbove = origin.y; //available vertical space on top of the view
-    const CGFloat spaceBelow = [self parentHeight] -  (origin.y + v.frame.size.height); //on the bottom
+    const CGFloat spaceBelow = [self parentHeight] -  (origin.y + frame.size.height); //on the bottom
     const CGFloat spaceOnLeft = origin.x; //on the left
-    const CGFloat spaceOnRight = [self parentWidth] - (origin.x + v.frame.size.width); //on the right
+    const CGFloat spaceOnRight = [self parentWidth] - (origin.x + frame.size.width); //on the right
 
     const FPPopoverArrowDirection bestDirection = [FPPopoverController bestArrowDirectionWithHint:self.arrowDirection
                                                                                        spaceAbove:spaceAbove
@@ -911,7 +918,7 @@
 
     const CGPoint idealPopoverOrigin = [FPPopoverController popoverOriginForDirection:bestDirection
                                                                                origin:origin
-                                                                             viewSize:v.frame.size
+                                                                             viewSize:frame.size
                                                                           contentSize:self.contentSize];
 
     const CGRect idealPopoverFrame = CGRectMake(idealPopoverOrigin.x, idealPopoverOrigin.y, self.contentSize.width, self.contentSize.height);
@@ -927,13 +934,8 @@
     _contentView.arrowDirection = bestDirection;
     _contentView.frame = CGRectIntegral(adjustedPopoverFrame);
 
-    self.origin = CGPointMake(origin.x + v.frame.size.width/2.0, origin.y + v.frame.size.height/2.0);
+    self.origin = CGPointMake(origin.x + frame.size.width/2.0, origin.y + frame.size.height/2.0);
     _contentView.relativeOrigin = [_parentView convertPoint:self.origin toView:_contentView];
-
-    return adjustedPopoverFrame;
 }
-
-
-
 
 @end

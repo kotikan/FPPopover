@@ -66,6 +66,7 @@
     UIWindow *_window;
     UIView *_parentView;
     UIView *_fromView;
+    CGRect _fromRect;
 }
 
 /**
@@ -126,6 +127,9 @@
 * Sets the popover style. This will change all aspects that a style object covers. Causes a redraw to occur.
 */
 - (void)setStyle:(FPPopoverStyle*)style;
+
+/** @brief Presenting the popover from a specified rect **/
+- (void)presentPopoverFromRect:(CGRect)rect;
 
 /** @brief Presenting the popover from a specified view **/
 -(void)presentPopoverFromView:(UIView*)fromView;
