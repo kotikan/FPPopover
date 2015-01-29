@@ -226,6 +226,7 @@ float fade( const float t ) { return t * t * t * (t * (t * 6 - 15) + 10); }
         [rightButton removeFromSuperview];
     }
     rightButton = button;
+    rightButton.accessibilityIdentifier = @"popoverRightButton";
     if (!button) {
         return;
     }
